@@ -489,3 +489,14 @@
 .asset-card.valuation.gain,.asset-card.valuation .day-card.gain{background:#FFF6F8!important}
 .asset-card.valuation.loss,.asset-card.valuation .day-card.loss{background:#F5F9FF!important}
 .asset-card.valuation.flat,.asset-card.valuation .day-card.flat{background:#fff!important}
+
+/* V1_R065: approved lighter index sample — values, changes, charts and soft backgrounds */
+.index-card.index-up{background:#F5F9FF!important}
+.index-card.index-down{background:#FFF6F8!important}
+.index-card.index-flat{background:#fff!important}
+.index-card.index-up .index-value,.index-card.index-up .index-change,
+.index-card.index-up .spark.rising{color:#70A9F3!important}
+.index-card.index-down .index-value,.index-card.index-down .index-change,
+.index-card.index-down .spark.falling{color:#EF8190!important}
+.index-card.index-flat .index-value,.index-card.index-flat .index-change,
+.index-card.index-flat .spark.neutral{color:#8793A2!important}
