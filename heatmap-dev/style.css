@@ -130,3 +130,17 @@
 
 /* R022 correction: override legacy !important flex shorthand, retain valuation ratios */
 @media(max-width:600px) and (orientation:portrait){.treemap-row>.heat-tile{flex:var(--weight) 1 0px!important}}
+
+/* V1_R023: squarified 2D treemap, no horizontal rows, stable installed-PWA viewport */
+@media(max-width:600px) and (orientation:portrait){
+ html,body{height:100%;overflow:hidden!important}
+ .app{height:100svh!important;max-height:100svh!important;overflow:hidden!important}
+ .sector-grid{grid-template-rows:1fr 1fr 1.8fr!important}
+ .sector-tiles.squarified-tiles{display:block!important;position:relative!important;overflow:hidden!important;width:100%!important;height:100%!important;max-width:100%!important;min-height:0!important}
+ .squarified-tiles>.heat-tile{position:absolute!important;display:flex!important;flex:none!important;min-width:0!important;max-width:none!important;min-height:0!important;max-height:none!important;margin:0!important;padding:4px!important;box-sizing:border-box!important;overflow:hidden!important}
+ .squarified-tiles>.heat-tile.tile-tiny .tile-icon,.squarified-tiles>.heat-tile.tile-tiny .tile-spark,.squarified-tiles>.heat-tile.tile-tiny .tile-weight{display:none!important}
+ .squarified-tiles>.heat-tile.tile-tiny .tile-name{font-size:9px!important;line-height:1.1!important;max-height:3.3em}
+ .squarified-tiles>.heat-tile.tile-tiny .tile-change{font-size:10px!important}
+ .squarified-tiles>.heat-tile.tile-micro .tile-change,.squarified-tiles>.heat-tile.tile-micro .tile-icon{display:none!important}
+ .squarified-tiles>.heat-tile.tile-micro .tile-name{font-size:8px!important}
+}
