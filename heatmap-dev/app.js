@@ -38,7 +38,7 @@ const EXTRA_INDICES=[
  {name:'항셍',value:'19,630.1',change:'+0.12%',dir:1,points:[15,22,19,24,21,30,28,37,33,39]}
 ];
 function createIndexCard(item){
- const card=el('article','index-card');
+ const card=el('article','index-card '+(item.dir>0?'index-up':item.dir<0?'index-down':'index-flat'));
  card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('small','index-change',item.change));
  const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);
  return card;
