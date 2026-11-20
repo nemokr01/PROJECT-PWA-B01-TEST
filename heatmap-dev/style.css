@@ -237,3 +237,9 @@
 }
 
 /* V1_R039: stock tile icons removed; preserve centered stock name and change. */
+
+/* V1_R040: semantic stock-name breaks; never split a word into stray characters */
+#sector-grid .theme-tiles>.heat-tile .tile-name{word-break:normal!important;overflow-wrap:normal!important;white-space:normal!important;line-break:strict!important}
+#sector-grid .theme-tiles>.heat-tile .tile-name .name-part{display:inline-block;white-space:nowrap;max-width:100%;font-size:inherit;vertical-align:baseline}
+#sector-grid .theme-tiles>.heat-tile.tile-tiny .tile-name .name-part{letter-spacing:-.035em}
+#sector-grid .theme-tiles>.heat-tile.tile-micro .tile-name .name-part{letter-spacing:-.06em}
