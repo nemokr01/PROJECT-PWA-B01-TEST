@@ -212,3 +212,11 @@
  #sector-grid .theme-tiles>.heat-tile.tile-tiny .tile-spark{display:block!important;height:12px!important;margin-top:2px!important;width:90%!important}
  #sector-grid .theme-tiles>.heat-tile.tile-micro .tile-spark{display:none!important}
 }
+
+/* V1_R034: colored, less glaring stock sparklines; preserve 2px stroke and position */
+@media(max-width:600px) and (orientation:portrait){
+ #sector-grid .theme-tiles>.heat-tile.tile-up .tile-spark polyline{stroke:#ffe08a!important}
+ #sector-grid .theme-tiles>.heat-tile.tile-down .tile-spark polyline{stroke:#173b75!important}
+ #sector-grid .theme-tiles>.heat-tile.tile-flat .tile-spark polyline{stroke:#34475e!important}
+ #sector-grid .theme-tiles>.heat-tile .tile-spark .spark{filter:none!important}
+}
