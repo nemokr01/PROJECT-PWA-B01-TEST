@@ -68,12 +68,21 @@ function squarify(items,width,height){
 function layoutTreemap(){
  const root=document.getElementById('sector-grid');if(!root)return;
  const width=root.clientWidth,height=root.clientHeight;if(width<10||height<10)return;
- const nodes=[...root.children],data=nodes.map(tile=>({name:tile.dataset.name,value:Number(tile.dataset.valuationArea)}));
- for(const pos of squarify(data,width,height)){
-  const tile=nodes.find(el=>el.dataset.name===pos.name);if(!tile)continue;
-  for(const [key,val] of Object.entries({left:pos.x,top:pos.y,width:Math.max(0,pos.w-3),height:Math.max(0,pos.h-3)}))tile.style.setProperty(key,val+'px','important');
-  tile.classList.toggle('tile-tiny',pos.w<83||pos.h<58);
-  tile.classList.toggle('tile-micro',pos.w<52||pos.h<37);
+ const groups=[...root.querySelectorAll('.theme-group')];
+ const groupRects=squarify(groups.map(g=>({name:g.dataset.theme,value:Number(g.dataset.valuationArea)})),width,height);
+ for(const rect of groupRects){
+  const group=groups.find(g=>g.dataset.theme===rect.name);if(!group)continue;
+  for(const [key,val] of Object.entries({left:rect.x,top:rect.y,width:Math.max(0,rect.w-3),height:Math.max(0,rect.h-3)}))group.style.setProperty(key,val+'px','important');
+  const header=group.querySelector('.theme-heading'),tiles=group.querySelector('.theme-tiles');
+  const headerHeight=Math.min(23,Math.max(14,rect.h*.13));
+  header.style.height=headerHeight+'px';
+  const innerWidth=Math.max(0,rect.w-5),innerHeight=Math.max(0,rect.h-3-headerHeight);
+  for(const pos of squarify([...tiles.children].map(t=>({name:t.dataset.name,value:Number(t.dataset.valuationArea)})),innerWidth,innerHeight)){
+   const tile=[...tiles.children].find(t=>t.dataset.name===pos.name);if(!tile)continue;
+   for(const [key,val] of Object.entries({left:pos.x,top:pos.y,width:Math.max(0,pos.w-3),height:Math.max(0,pos.h-3)}))tile.style.setProperty(key,val+'px','important');
+   tile.classList.toggle('tile-tiny',pos.w<83||pos.h<58);
+   tile.classList.toggle('tile-micro',pos.w<52||pos.h<37);
+  }
  }
 }
 function render(data){
@@ -85,14 +94,21 @@ function render(data){
  const idx=byId('indices');idx.replaceChildren();
  for(const item of INDICES){const card=el('article','index-card');card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('small','index-change',item.change));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
  const root=byId('sector-grid');root.replaceChildren();
- const sectorFor=new Map(SECTORS.flatMap(group=>group.stocks.map(name=>[name,group.name])));
- for(const s of r.stocks.filter(s=>s.value>0)){
-  const tile=el('article','heat-tile '+(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'));
-  const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
-  tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
-  tile.title=`${s.name} · ${sectorFor.get(s.name)||'기타'} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
-  tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));
-  const chart=el('div','tile-spark');chart.innerHTML=spark([13,22,20,37,32,44,42,59,54,65],s.change);tile.append(chart);root.append(tile);
+ for(const theme of SECTORS){
+  const members=theme.stocks.map(name=>r.stocks.find(s=>s.name===name)).filter(s=>s&&s.value>0);
+  if(!members.length)continue;
+  const group=el('section','theme-group');group.dataset.theme=theme.name;group.dataset.valuationArea=String(members.reduce((sum,s)=>sum+s.value,0));
+  group.append(el('h2','theme-heading',theme.name));
+  const tiles=el('div','theme-tiles');
+  for(const s of members){
+   const tile=el('article','heat-tile '+(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'));
+   const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
+   tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
+   tile.title=`${s.name} · ${theme.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
+   tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));
+   const chart=el('div','tile-spark');chart.innerHTML=spark([13,22,20,37,32,44,42,59,54,65],s.change);tile.append(chart);tiles.append(tile);
+  }
+  group.append(tiles);root.append(group);
  }
  const demo=byId('unowned-examples');demo.replaceChildren();demo.append(el('strong','example-label','미보유 예시 · 히트맵 제외'));for(const name of UNOWNED_EXAMPLES)demo.append(el('span','example-name',name));
  byId('notice').textContent='보유 평가금액 비례 · 9단계 등락률 색상';
