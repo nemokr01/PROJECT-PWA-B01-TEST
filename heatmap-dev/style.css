@@ -435,3 +435,8 @@
  box-shadow:none!important;
  background:#fff!important;
 }
+
+/* V1_R058: restore original V1_R049 subtle gain/loss card background colors; no neon */
+.asset-card.valuation.gain,.asset-card.valuation .day-card.gain{background:#FFFCFC!important}
+.asset-card.valuation.loss,.asset-card.valuation .day-card.loss{background:#FBFDFF!important}
+.asset-card.valuation.flat,.asset-card.valuation .day-card.flat{background:#fff!important}
