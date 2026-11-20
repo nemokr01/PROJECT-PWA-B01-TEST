@@ -63,17 +63,21 @@ function render(data){
  for(const item of INDICES){const card=el('article','index-card '+(item.dir>0?'red':item.dir<0?'blue':'neutral'));card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('span','index-change',item.change));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
  const root=byId('sector-grid');root.replaceChildren();
  const owned=r.stocks.filter(s=>s.value>0);
- const minPositive=owned.length?Math.min(...owned.map(s=>s.value)):0;
- const areaScale=minPositive?72/minPositive:0;
  for(const group of SECTORS){
    const sector=el('section','sector');sector.append(el('h2','sector-heading',group.name+' ›'));
-   const tiles=el('div','sector-tiles');
+   const tiles=el('div','sector-tiles treemap-tiles');
+   const sectorStocks=group.stocks.map(name=>r.stocks.find(s=>s.name===name)).filter(s=>s&&s.value>0);
+   const rowCount=sectorStocks.length>4?2:1;
+   const rows=Array.from({length:rowCount},()=>[]);
+   sectorStocks.forEach((s,i)=>rows[rowCount===1?0:i%2].push(s));
+   const rowTotals=rows.map(row=>row.reduce((sum,s)=>sum+s.value,0));
+   const rowEls=rows.map((row,i)=>{const e=el('div','treemap-row');e.style.flexGrow=String(rowTotals[i]);tiles.append(e);return e;});
    for(const name of group.stocks){
     const s=r.stocks.find(x=>x.name===name);
     const tile=el('article','heat-tile '+(s?(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'):'tile-demo'));
-    if(s){const [bg,fg]=tilePalette(s.change);tile.style.background=bg;tile.style.color=fg;const weight=r.valuation?s.value/r.valuation:0;tile.style.setProperty('--weight',String(Math.max(weight*100,0.1)));tile.dataset.valuationWeight=String(weight);tile.style.width=s.value>0?`${(s.value*areaScale).toFixed(4)}px`:'72px';tile.dataset.valuationArea=String(s.value);tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));}
+    if(s){const [bg,fg]=tilePalette(s.change);tile.style.background=bg;tile.style.color=fg;const weight=r.valuation?s.value/r.valuation:0;tile.style.setProperty('--weight',String(Math.max(weight*100,0.1)));tile.dataset.valuationWeight=String(weight);tile.style.width='auto';tile.style.flexGrow=String(s.value);tile.style.flexBasis='0px';tile.title=`${s.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;tile.dataset.valuationArea=String(s.value);tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));}
     else {continue;}
-    const chart=el('div','tile-spark');chart.innerHTML=spark(s?[13,22,20,37,32,44,42,59,54,65]:[15,22,18,30,26,37,34,49],s?.change||0);tile.append(chart);tiles.append(tile);
+    const chart=el('div','tile-spark');chart.innerHTML=spark(s?[13,22,20,37,32,44,42,59,54,65]:[15,22,18,30,26,37,34,49],s?.change||0);tile.append(chart);const rowIndex=rowCount===1?0:sectorStocks.findIndex(item=>item.name===s.name)%2;rowEls[rowIndex].append(tile);
    }
    sector.append(tiles);root.append(sector);
  }
