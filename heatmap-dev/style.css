@@ -208,7 +208,7 @@
    color:#fff!important;pointer-events:none!important;
  }
  #sector-grid .theme-tiles>.heat-tile .tile-spark .spark{color:#fff!important;filter:drop-shadow(0 1px 1px rgba(0,0,0,.65))}
- #sector-grid .theme-tiles>.heat-tile .tile-spark polyline{stroke:#fff!important;stroke-width:4!important;vector-effect:non-scaling-stroke}
+ #sector-grid .theme-tiles>.heat-tile .tile-spark polyline{stroke:#fff!important;stroke-width:2!important;vector-effect:non-scaling-stroke}
  #sector-grid .theme-tiles>.heat-tile.tile-tiny .tile-spark{display:block!important;height:12px!important;margin-top:2px!important;width:90%!important}
  #sector-grid .theme-tiles>.heat-tile.tile-micro .tile-spark{display:none!important}
 }
