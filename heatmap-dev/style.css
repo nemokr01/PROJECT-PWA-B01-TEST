@@ -96,3 +96,18 @@
  .tile-name{font-size:10px!important;overflow-wrap:anywhere}
  .tile-change{font-size:13px!important}
 }
+
+/* V1_R021: repair three-sector grid overlap and viewport resizing after refresh */
+@media(max-width:600px) and (orientation:portrait){
+ .sector-grid{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"semi" "energy" "other"!important;grid-template-rows:repeat(3,minmax(0,1fr))!important;min-height:0;overflow:hidden;gap:5px}
+ .sector:nth-child(1){grid-area:semi!important}.sector:nth-child(2){grid-area:energy!important}.sector:nth-child(3){grid-area:other!important}
+ .sector{min-height:0;min-width:0;overflow:hidden;grid-template-rows:17px minmax(0,1fr)}
+ .sector-heading{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .sector-tiles{min-width:0;min-height:0!important;max-width:100%;overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important}
+ .heat-tile{flex:0 0 auto!important;max-height:100%;min-height:0!important}
+ .app{height:100dvh;max-height:none;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain}
+ main{min-height:0;overflow:visible;grid-template-rows:minmax(97px,.93fr) minmax(66px,.61fr) minmax(0,3.62fr) minmax(62px,.72fr)}
+ .heatmap-section{min-height:0;grid-template-rows:minmax(0,1fr) 24px 12px!important;overflow:visible!important}
+ .briefing{min-height:62px}
+}
+@media(max-width:600px) and (orientation:portrait) and (max-height:650px){main{grid-template-rows:minmax(87px,.93fr) minmax(58px,.61fr) minmax(0,3.62fr) minmax(49px,.72fr)}.sector{grid-template-rows:14px minmax(0,1fr)}.briefing{min-height:49px}}
