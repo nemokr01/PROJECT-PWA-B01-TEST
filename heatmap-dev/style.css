@@ -500,3 +500,6 @@
 .index-card.index-down .spark.falling{color:#EF8190!important}
 .index-card.index-flat .index-value,.index-card.index-flat .index-change,
 .index-card.index-flat .spark.neutral{color:#8793A2!important}
+
+/* V1_R066: white overall PWA canvas; preserve individual card gain/loss colors */
+html,body,.app{background:#fff!important;background-image:none!important}
