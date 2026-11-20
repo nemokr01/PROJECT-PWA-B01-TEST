@@ -484,3 +484,8 @@
 .asset-card.valuation .day-card.gain small{color:#C52C42!important}
 .asset-card.valuation .day-card.loss strong,
 .asset-card.valuation .day-card.loss small{color:#2465B5!important}
+
+/* V1_R064: positive gains pink, negative changes blue, matching text and chart; no neon */
+.asset-card.valuation.gain,.asset-card.valuation .day-card.gain{background:#FFF6F8!important}
+.asset-card.valuation.loss,.asset-card.valuation .day-card.loss{background:#F5F9FF!important}
+.asset-card.valuation.flat,.asset-card.valuation .day-card.flat{background:#fff!important}
