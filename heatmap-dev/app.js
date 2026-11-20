@@ -22,11 +22,11 @@ const INDICES=[
 const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스']},{name:'자동차·기타',stocks:['현대차','NAVER','카카오']}];
 const UNOWNED_EXAMPLES=['한전기술','두산에너빌리티'];
 function tilePalette(change){
- const anchors=[[-3,'#124FAD'],[-2,'#2679CF'],[-1,'#79B9EE'],[0,'#788594'],[1,'#F29A9F'],[2,'#E64B59'],[3,'#B91C35']];
+ const anchors=[[-4.5,'#123F98'],[-3,'#246CC5'],[-2,'#4B9ADD'],[-1,'#A4D3F2'],[0,'#8793A2'],[1,'#F6B4B7'],[2,'#F17A83'],[3,'#DF4356'],[4.5,'#A90E2B']];
  if(!Number.isFinite(change))return ['#788594','#FFFFFF'];
- const x=Math.max(-3,Math.min(3,change));
+ const x=Math.max(-4.5,Math.min(4.5,change));
  let hex=anchors[anchors.length-1][1];
- if(x<=-3)hex=anchors[0][1];
+ if(x<=-4.5)hex=anchors[0][1];
  else for(let i=1;i<anchors.length;i++){if(x<=anchors[i][0]){
   const [p,from]=anchors[i-1],[q,to]=anchors[i],t=(x-p)/(q-p);
   const rgb=[0,1,2].map(j=>Math.round(parseInt(from.slice(1+j*2,3+j*2),16)*(1-t)+parseInt(to.slice(1+j*2,3+j*2),16)*t));
