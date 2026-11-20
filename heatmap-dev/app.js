@@ -59,8 +59,8 @@ function squarify(items,width,height){
  const worst=(list,side)=>{if(!list.length)return Infinity;const sum=list.reduce((n,a)=>n+a.area,0),small=Math.min(...list.map(a=>a.area)),large=Math.max(...list.map(a=>a.area));return Math.max(side*side*large/(sum*sum),(sum*sum)/(side*side*small));};
  function place(list){
   const sum=list.reduce((n,a)=>n+a.area,0);
-  if(w>=h){const rowH=sum/w;let xx=x;list.forEach((a,i)=>{const ww=i===list.length-1?x+w-xx:a.area/rowH;rects.push({name:a.name,x:xx,y,w:ww,h:rowH});xx+=ww;});y+=rowH;h=Math.max(0,h-rowH);}
-  else{const colW=sum/h;let yy=y;list.forEach((a,i)=>{const hh=i===list.length-1?y+h-yy:a.area/colW;rects.push({name:a.name,x,y:yy,w:colW,h:hh});yy+=hh;});x+=colW;w=Math.max(0,w-colW);}
+  if(w>=h){const colW=sum/h;let yy=y;list.forEach((a,i)=>{const hh=i===list.length-1?y+h-yy:a.area/colW;rects.push({name:a.name,x,y:yy,w:colW,h:hh});yy+=hh;});x+=colW;w=Math.max(0,w-colW);}
+  else{const rowH=sum/w;let xx=x;list.forEach((a,i)=>{const ww=i===list.length-1?x+w-xx:a.area/rowH;rects.push({name:a.name,x:xx,y,w:ww,h:rowH});xx+=ww;});y+=rowH;h=Math.max(0,h-rowH);}
  }
  while(remaining.length){const next=remaining[0],side=Math.min(w,h);if(!row.length||worst([...row,next],side)<=worst(row,side))row.push(remaining.shift());else{place(row);row=[];}}
  if(row.length)place(row);return rects;
