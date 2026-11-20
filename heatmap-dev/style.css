@@ -367,3 +367,21 @@
 @media(max-width:600px) and (orientation:portrait){
  .asset-card.valuation .valuation-main{padding:5px 3px}
 }
+
+/* V1_R054: apply neon only to the original valuation outer border and original day-card border */
+.asset-card.valuation .valuation-main,
+.asset-card.valuation.gain .valuation-main,
+.asset-card.valuation.loss .valuation-main,
+.asset-card.valuation.flat .valuation-main{
+ border:0!important;box-shadow:none!important;border-radius:0!important;
+ padding:0 5px 0 0!important;background:transparent!important;
+}
+.asset-card.valuation,.asset-card.valuation.gain,.asset-card.valuation.loss,.asset-card.valuation.flat{
+ background:#fff!important;
+ box-shadow:none;
+}
+.asset-card.valuation.gain{border:1px solid #e84a65!important;box-shadow:inset 0 0 5px rgba(232,74,101,.23),0 0 5px rgba(232,74,101,.23)}
+.asset-card.valuation.loss{border:1px solid #378bea!important;box-shadow:inset 0 0 5px rgba(55,139,234,.23),0 0 5px rgba(55,139,234,.23)}
+.asset-card.valuation.flat{border:1px solid #e7ebf0!important;box-shadow:none!important}
+.asset-card.valuation .day-card{background:#fff!important}
+.asset-card.valuation .day-card.flat{border:1px solid #e7ebf0!important;box-shadow:none!important}
