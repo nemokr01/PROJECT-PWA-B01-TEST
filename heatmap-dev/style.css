@@ -243,3 +243,10 @@
 #sector-grid .theme-tiles>.heat-tile .tile-name .name-part{display:inline-block;white-space:nowrap;max-width:100%;font-size:inherit;vertical-align:baseline}
 #sector-grid .theme-tiles>.heat-tile.tile-tiny .tile-name .name-part{letter-spacing:-.035em}
 #sector-grid .theme-tiles>.heat-tile.tile-micro .tile-name .name-part{letter-spacing:-.06em}
+
+/* V1_R041: short single-line stock labels on small tiles, full semantic labels otherwise */
+#sector-grid .theme-tiles>.heat-tile .tile-name .name-full{display:inline!important}
+#sector-grid .theme-tiles>.heat-tile .tile-name .name-short{display:none!important}
+#sector-grid .theme-tiles>.heat-tile.tile-tiny .tile-name .name-full{display:none!important}
+#sector-grid .theme-tiles>.heat-tile.tile-tiny .tile-name .name-short{display:block!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;max-width:100%!important;font-size:clamp(8px,2.4vw,11px)!important;letter-spacing:-.045em!important}
+#sector-grid .theme-tiles>.heat-tile.tile-micro .tile-name .name-short{font-size:8px!important;letter-spacing:-.07em!important}
