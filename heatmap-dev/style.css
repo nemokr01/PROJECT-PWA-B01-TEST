@@ -503,3 +503,6 @@
 
 /* V1_R066: white overall PWA canvas; preserve individual card gain/loss colors */
 html,body,.app{background:#fff!important;background-image:none!important}
+
+/* V1_R067: extremely subtle cool-white overall background; card colors unchanged */
+html,body,.app{background:#FAFCFF!important;background-image:none!important}
