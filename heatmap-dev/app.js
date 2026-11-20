@@ -49,18 +49,37 @@ function tilePalette(change){
 }
 function spark(points,dir=1){if(!Array.isArray(points)||points.length<2||!points.every(Number.isFinite))throw Error('미니차트 데이터 오류');const w=160,h=55,min=Math.min(...points),max=Math.max(...points),span=max-min||1;const coords=points.map((n,i)=>`${(i/(points.length-1)*w).toFixed(1)},${(h-5-(n-min)/span*(h-12)).toFixed(1)}`).join(' ');return `<svg class="spark ${dir>0?'rising':dir<0?'falling':'neutral'}" viewBox="0 0 ${w} ${h}" aria-hidden="true" preserveAspectRatio="none"><polyline points="${coords}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
-function render(data){
- const r=calculate(data),byId=id=>document.getElementById(id);
- byId('invested').textContent=won(r.invested);byId('valuation').textContent=won(r.valuation);
- byId('profit').textContent=won(r.profit);byId('return').textContent=r.rate===null?'—':percent(r.rate);
- byId('profit').className=r.profit>0?'positive':r.profit<0?'negative':'';
- byId('return').className=r.profit>0?'positive':r.profit<0?'negative':'';
- byId('cash').textContent=won(r.cash);
- const dayChange=r.valuation? r.stocks.reduce((sum,s)=>sum+s.value*s.change/100,0):0;
- byId('dayrate').textContent=r.valuation?percent(dayChange/r.valuation*100):'—';
- byId('dayprofit').textContent=(dayChange>=0?'+':'')+won(Math.round(dayChange));byId('dayrate').className=dayChange>0?'positive':dayChange<0?'negative':'';byId('dayprofit').className=dayChange>0?'positive':dayChange<0?'negative':'';
- const idx=byId('indices');idx.replaceChildren();
- for(const item of INDICES){const card=el('article','index-card '+(item.dir>0?'red':item.dir<0?'blue':'neutral'));card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('span','index-change',item.change));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
+
+function squarify(items,width,height){
+ const rects=[];if(!items.length||width<=0||height<=0)return rects;
+ const total=items.reduce((n,s)=>n+s.value,0);if(total<=0)return rects;
+ const sorted=[...items].sort((a,b)=>b.value-a.value);
+ let remaining=sorted.map(s=>({...s,area:s.value/total*width*height}));
+ let x=0,y=0,w=width,h=height;
+ const worst=(row,side)=>{const sum=row.reduce((n,a)=>n+a.area,0),min=Math.min(...row.map(a=>a.area)),max=Math.max(...row.map(a=>a.area));return Math.max(side*side*max/(sum*sum),(sum*sum)/(side*side*min));};
+ function place(row){const sum=row.reduce((n,a)=>n+a.area,0);if(w>=h){const rowW=sum/h;let yy=y;row.forEach((a,i)=>{const hh=i===row.length-1?y+h-yy:a.area/rowW;rects.push({name:a.name,x,y:yy,w:rowW,h:hh});yy+=hh;});x+=rowW;w=Math.max(0,w-rowW);}else{const rowH=sum/w;let xx=x;row.forEach((a,i)=>{const ww=i===row.length-1?x+w-xx:a.area/rowH;rects.push({name:a.name,x:xx,y,w:ww,h:rowH});xx+=ww;});y+=rowH;h=Math.max(0,h-rowH);}}
+ let row=[];while(remaining.length){const next=remaining[0],side=Math.min(w,h);if(!row.length||worst([...row,next],side)<=worst(row,side)){row.push(remaining.shift());}else{place(row);row=[];}}
+ if(row.length)place(row);return rects;
+}
+function layoutTreemap(){
+ const root=document.getElementById('se const root=byId('sector-grid');root.replaceChildren();
+ for(const group of SECTORS){
+  const sector=el('section','sector');sector.append(el('h2','sector-heading',group.name+' ›'));
+  const tiles=el('div','sector-tiles squarified-tiles');
+  for(const name of group.stocks){
+   const s=r.stocks.find(x=>x.name===name);if(!s||s.value<=0)continue;
+   const tile=el('article','heat-tile '+(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'));
+   const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
+   tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;
+   tile.dataset.valuationArea=String(s.value);
+   tile.title=`${s.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
+   tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));
+   const chart=el('div','tile-spark');chart.innerHTML=spark([13,22,20,37,32,44,42,59,54,65],s.change);tile.append(chart);tiles.append(tile);
+  }
+  sector.append(tiles);root.append(sector);
+ }
+ requestAnimationFrame(layoutTreemap);
+ge));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
  const root=byId('sector-grid');root.replaceChildren();
  const owned=r.stocks.filter(s=>s.value>0);
  for(const group of SECTORS){
@@ -84,5 +103,5 @@ function render(data){
  const demo=byId('unowned-examples');demo.replaceChildren();demo.append(el('strong','example-label','미보유 예시 · 히트맵 제외'));for(const name of UNOWNED_EXAMPLES)demo.append(el('span','example-name',name));
  byId('notice').textContent='보유 평가금액 비례 · 9단계 등락률 색상';
 }
-if(typeof document!=='undefined'){try{render(MOCK);}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
+if(typeof document!=='undefined'){try{render(MOCK);window.addEventListener('resize',layoutTreemap,{passive:true});if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>requestAnimationFrame(layoutTreemap));observer.observe(document.getElementById('sector-grid'));}}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
 if(typeof module!=='undefined')module.exports={MOCK,validate,calculate,percent,spark,INDICES,SECTORS};
