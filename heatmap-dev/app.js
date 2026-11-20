@@ -281,7 +281,10 @@ function showHomeExitHint(){
  homeExitTimer=setTimeout(()=>homeExitToast?.classList.remove('visible'),2000);
 }
 function armHomeBackGuard(){
- if(location.hash===HOME_GUARD_HASH)return;
+ if(location.hash===HOME_GUARD_HASH){
+  // A bookmarked/reloaded hash alone is not a real guard history entry.
+  history.replaceState({},'',location.pathname+location.search);
+ }
  history.pushState({pwaHomeGuardV1:true},'',location.pathname+location.search+HOME_GUARD_HASH);
 }
 function onPwaBack(){
