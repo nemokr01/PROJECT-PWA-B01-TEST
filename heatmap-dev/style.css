@@ -585,3 +585,7 @@ html,body,.app{background:#FAF8F5!important;background-image:none!important}
  #stock-detail .stock-detail-period{font-size:8px;padding:2px 5px}
  #stock-detail .stock-detail-chart-label{display:none}
 }
+
+/* V1_R083: Galaxy home-screen back gesture exit hint */
+.pwa-exit-toast{position:fixed;left:50%;bottom:max(26px,env(safe-area-inset-bottom));transform:translate(-50%,10px);max-width:calc(100vw - 32px);width:max-content;padding:10px 16px;border-radius:24px;background:rgba(30,39,52,.92);color:#fff;font-size:12px;font-weight:600;text-align:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;box-shadow:0 3px 12px rgba(0,0,0,.18)}
+.pwa-exit-toast.visible{opacity:1;transform:translate(-50%,0)}
