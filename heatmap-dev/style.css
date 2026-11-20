@@ -111,3 +111,19 @@
  .briefing{min-height:62px}
 }
 @media(max-width:600px) and (orientation:portrait) and (max-height:650px){main{grid-template-rows:minmax(87px,.93fr) minmax(58px,.61fr) minmax(0,3.62fr) minmax(49px,.72fr)}.sector{grid-template-rows:14px minmax(0,1fr)}.briefing{min-height:49px}}
+
+/* V1_R022: fixed small viewport after refresh, all 16 holdings visible as proportional treemap */
+@media(max-width:600px) and (orientation:portrait){
+ html,body{height:100%;overflow:hidden!important}
+ .app{height:100svh!important;max-height:100svh!important;min-height:0!important;overflow:hidden!important;display:grid!important;grid-template-rows:24px minmax(0,1fr) 16px!important;gap:4px!important}
+ main{min-height:0!important;overflow:hidden!important;display:grid!important;grid-template-rows:minmax(97px,.93fr) minmax(66px,.61fr) minmax(0,3.62fr) minmax(62px,.72fr)!important;gap:6px!important}
+ .heatmap-section{min-height:0!important;overflow:visible!important;display:grid!important;grid-template-rows:minmax(0,1fr) 24px 12px!important;gap:2px!important}
+ .sector-grid{min-height:0!important;overflow:hidden!important;grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"semi" "energy" "other"!important;grid-template-rows:1fr 1fr 1.8fr!important;gap:5px!important}
+ .sector{min-height:0!important;min-width:0!important;overflow:hidden!important;display:grid!important;grid-template-rows:17px minmax(0,1fr)!important}
+ .sector-tiles.treemap-tiles{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;min-height:0!important;height:100%!important;width:100%!important;max-width:100%!important;overflow:hidden!important;gap:4px!important}
+ .treemap-row{display:flex;flex-direction:row;min-width:0;min-height:0;flex-basis:0;gap:4px;overflow:hidden}
+ .treemap-row>.heat-tile{width:auto!important;min-width:0!important;max-width:none!important;height:100%!important;min-height:0!important;flex-shrink:1!important;box-sizing:border-box;padding:4px!important;overflow:hidden}
+ .treemap-row>.heat-tile .tile-icon{font-size:10px!important}.treemap-row>.heat-tile .tile-name{font-size:clamp(8px,2.5vw,12px)!important;overflow-wrap:anywhere;word-break:break-word;line-height:1.05}.treemap-row>.heat-tile .tile-change{font-size:clamp(10px,3vw,15px)!important;white-space:normal}.treemap-row>.heat-tile .tile-weight{font-size:8px!important;line-height:1.1}
+ .briefing{min-height:0!important;overflow:hidden!important}
+}
+@media(max-width:600px) and (orientation:portrait) and (max-height:650px){main{grid-template-rows:minmax(87px,.93fr) minmax(58px,.61fr) minmax(0,3.62fr) minmax(49px,.72fr)!important}.sector{grid-template-rows:14px minmax(0,1fr)!important}}
