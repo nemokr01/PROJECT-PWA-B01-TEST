@@ -191,11 +191,38 @@ function layoutTreemap(){
   }
  }
 }
-// V1_R081: stock details replace the briefing content, without changing layout size.
+// V1_R082: same-size briefing/detail panel, line-only chart behind text.
 let selectedStockName=null;
-function showStockDetail(name){
+let detailPeriod='1m';
+let detailHistoryActive=false;
+const DETAIL_PERIODS=[['day','당일'],['week','1주'],['1m','1개월'],['3m','3개월']];
+function renderMockDetailChart(stock,period){
+ const wrap=el('div','stock-detail-backchart');
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ svg.setAttribute('viewBox','0 0 340 160');svg.setAttribute('preserveAspectRatio','none');svg.setAttribute('aria-hidden','true');
+ // Deterministic illustration only: never present as actual OHLC/history.
+ const seed=[...stock.name].reduce((n,ch)=>n+ch.charCodeAt(0),0);
+ const drift=stock.change<0?1:-1;
+ const points=Array.from({length:24},(_,i)=>{
+  const wave=Math.sin(i*(period==='day'?1.5:period==='week'?.95:period==='1m'?.68:.4)+seed)*8;
+  const noise=Math.cos(i*1.9+seed*.2)*4;
+  const y=111+drift*i*1.35+wave+noise;
+  return (i*340/23).toFixed(1)+','+Math.max(25,Math.min(145,y)).toFixed(1);
+ }).join(' ');
+ const poly=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+ poly.setAttribute('points',points);poly.setAttribute('fill','none');
+ poly.setAttribute('stroke',stock.change<0?'#246CC5':stock.change>0?'#DF4356':'#8793A2');
+ poly.setAttribute('stroke-width','2.2');poly.setAttribute('stroke-opacity','.38');
+ poly.setAttribute('stroke-linecap','round');poly.setAttribute('stroke-linejoin','round');
+ svg.append(poly);wrap.append(svg);return wrap;
+}
+function showStockDetail(name,fromHistory=false){
  const stock=heatmapStocks.find(s=>s.name===name),panel=document.getElementById('stock-detail'),summary=document.getElementById('briefing-default');
  if(!stock||!panel||!summary)return;
+ if(!fromHistory&&!detailHistoryActive){
+  history.pushState({pwaStockDetail:true},'',location.href);
+  detailHistoryActive=true;
+ }
  selectedStockName=name;
  const rate=stock.invested?stock.profit/stock.invested*100:null;
  const theme=SECTORS.find(t=>t.stocks.includes(name))?.name||'기타';
@@ -204,8 +231,10 @@ function showStockDetail(name){
  const daySign=daily>0?'gain':daily<0?'loss':'flat';
  const total=heatmapStocks.reduce((n,s)=>n+s.value,0);
  panel.replaceChildren();
+ panel.append(renderMockDetailChart(stock,detailPeriod));
+ const content=el('div','stock-detail-content');
  const head=el('div','stock-detail-head');
- const back=el('button','stock-detail-back','←');back.type='button';back.setAttribute('aria-label','시장 브리핑으로 돌아가기');back.addEventListener('click',hideStockDetail);
+ const back=el('button','stock-detail-back','←');back.type='button';back.setAttribute('aria-label','시장 브리핑으로 돌아가기');back.addEventListener('click',()=>hideStockDetail());
  head.append(back,el('strong','stock-detail-name',stock.name),el('span','stock-detail-market',theme),el('span','stock-detail-mock','모의'));
  const price=el('div','stock-detail-price');
  price.append(el('strong','',won(stock.price)),el('span','stock-detail-rate '+daySign,percent(daily)));
@@ -213,24 +242,27 @@ function showStockDetail(name){
  for(const [label,value,cls] of [['보유수량',stock.qty.toLocaleString('ko-KR')+'주',''],['평가금액',won(stock.value),''],['평가손익',(stock.profit>=0?'+':'')+won(stock.profit),sign],['수익률',percent(rate),sign],['보유비중',total?(stock.value/total*100).toFixed(1)+'%':'—','']]){
   const cell=el('div','stock-detail-metric');cell.append(el('span','',label),el('strong',cls,value));metrics.append(cell);
  }
- // Illustrative mock-only trend: not historical or real-time price data.
- const trend=el('div','stock-detail-trend');
- const points=[34,31,33,28,29,25,27,23,25,19,21,18,15,17,12].map((v,i)=>v+(daily<0?i*1.6:-i*.35));
- const line=points.map((v,i)=>((i/(points.length-1))*300).toFixed(1)+','+v.toFixed(1)).join(' ');
- const chart=document.createElementNS('http://www.w3.org/2000/svg','svg');chart.setAttribute('viewBox','0 0 300 48');chart.setAttribute('preserveAspectRatio','none');chart.setAttribute('aria-hidden','true');
- const poly=document.createElementNS('http://www.w3.org/2000/svg','polyline');poly.setAttribute('points',line);poly.setAttribute('fill','none');poly.setAttribute('stroke',daily<0?'#246CC5':daily>0?'#DF4356':'#8793A2');poly.setAttribute('stroke-width','2.5');poly.setAttribute('stroke-linejoin','round');chart.append(poly);
- trend.append(chart,el('small','','모의 추이 · 실제 시세 차트 아님'));
- panel.append(head,price,metrics,trend);
+ const periods=el('div','stock-detail-periods');
+ for(const [key,label] of DETAIL_PERIODS){
+  const btn=el('button','stock-detail-period'+(key===detailPeriod?' active':''),label);
+  btn.type='button';btn.setAttribute('aria-pressed',String(key===detailPeriod));
+  btn.addEventListener('click',()=>{detailPeriod=key;showStockDetail(name,true);});
+  periods.append(btn);
+ }
+ content.append(head,price,metrics,periods);
+ panel.append(content,el('span','stock-detail-chart-label','모의 추이 · 실제 가격 이력 아님'));
  summary.hidden=true;panel.hidden=false;document.getElementById('briefing-panel')?.classList.add('show-stock-detail');
  document.querySelectorAll('#sector-grid .heat-tile').forEach(t=>t.classList.toggle('selected-stock',t.dataset.name===name));
 }
-function hideStockDetail(){
- selectedStockName=null;
+function hideStockDetail(fromHistory=false){
+ if(!fromHistory&&detailHistoryActive){history.back();return;}
+ detailHistoryActive=false;selectedStockName=null;
  const summary=document.getElementById('briefing-default'),panel=document.getElementById('stock-detail');
  if(summary)summary.hidden=false;if(panel)panel.hidden=true;
  document.getElementById('briefing-panel')?.classList.remove('show-stock-detail');
  document.querySelectorAll('#sector-grid .heat-tile').forEach(t=>t.classList.remove('selected-stock'));
 }
+window.addEventListener('popstate',()=>{if(selectedStockName)hideStockDetail(true);});
 // V1_R073: switch heatmap values without changing evaluation-weighted tile layout.
 let heatmapMode='daily';
 let heatmapStocks=[];
