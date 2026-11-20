@@ -173,3 +173,6 @@
  #sector-grid .theme-tiles>.tile-micro .tile-change,#sector-grid .theme-tiles>.tile-micro .tile-icon{display:none!important}
  #sector-grid .theme-tiles>.tile-micro .tile-name{font-size:8px!important}
 }
+
+/* V1_R029: remove theme container outlines, preserve headings and tile gaps */
+@media(max-width:600px) and (orientation:portrait){#sector-grid>.theme-group{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}}
