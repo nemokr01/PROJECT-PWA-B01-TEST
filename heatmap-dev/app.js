@@ -189,8 +189,8 @@ function setupHeatmapSwipe(){
   if(!start||e.changedTouches.length!==1){start=null;return;}
   const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;start=null;
   if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.5)return;
-  if(dx<0&&heatmapMode==='daily')updateHeatmapMode('return');
-  else if(dx>0&&heatmapMode==='return')updateHeatmapMode('daily');
+  // V1_R077: either horizontal direction toggles the current heatmap mode.
+  updateHeatmapMode(heatmapMode==='daily'?'return':'daily');
  },{passive:true});
 }
 function render(data){
