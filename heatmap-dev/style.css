@@ -534,3 +534,6 @@ html,body,.app{background:#FAF8F5!important;background-image:none!important}
 @keyframes heatModeFlash{0%{opacity:.45;transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
 @keyframes heatValueFlash{0%{opacity:.45;transform:translateY(3px)}100%{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){#heatmap-mode.mode-flash,#sector-grid .heat-tile.heat-mode-pulse .tile-change{animation:none!important}#sector-grid .heat-tile{transition:none!important}}
+
+/* V1_R076: align mode text tightly with the ? control, clear of sector titles */
+#heatmap-mode{top:-5px!important;right:29px!important;padding:0 2px!important;line-height:21px!important;height:21px!important;display:inline-flex!important;align-items:center!important;justify-content:flex-end!important}
