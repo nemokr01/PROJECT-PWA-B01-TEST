@@ -1,5 +1,5 @@
 /* PROJECT PWA DEV: network-first HTML/CSS/JS, no precache, offline fallback not guaranteed. */
-const DEV_CACHE='project-pwa-dev-fallback-v1';
+const DEV_CACHE='project-pwa-dev-fallback-v1-r009';
 self.addEventListener('install',event=>{self.skipWaiting();});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('project-pwa-dev-')&&key!==DEV_CACHE)await caches.delete(key);await self.clients.claim();})());});
 self.addEventListener('fetch',event=>{
