@@ -69,7 +69,7 @@ function layoutTreemap(){
   const nodes=[...tiles.children],data=nodes.map(tile=>({name:tile.dataset.name,value:Number(tile.dataset.valuationArea)}));
   const positions=squarify(data,width,height);
   for(const pos of positions){const tile=nodes.find(el=>el.dataset.name===pos.name);if(!tile)continue;
-   tile.style.left=pos.x+'px';tile.style.top=pos.y+'px';tile.style.width=Math.max(0,pos.w-3)+'px';tile.style.height=Math.max(0,pos.h-3)+'px';
+   tile.style.setProperty('left',pos.x+'px','important');tile.style.setProperty('top',pos.y+'px','important');tile.style.setProperty('width',Math.max(0,pos.w-3)+'px','important');tile.style.setProperty('height',Math.max(0,pos.h-3)+'px','important');
    tile.classList.toggle('tile-tiny',pos.w<75||pos.h<55);tile.classList.toggle('tile-micro',pos.w<47||pos.h<35);
   }
  }
