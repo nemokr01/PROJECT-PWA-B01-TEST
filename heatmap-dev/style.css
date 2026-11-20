@@ -309,3 +309,7 @@
 
 /* V1_R047: slightly stronger translucent valuation background chart */
 .asset-card.valuation .valuation-main>.valuation-chart{opacity:.25!important;filter:saturate(.8)}
+
+/* V1_R048: lighten gain/loss card backgrounds only, preserve chart and typography */
+.asset-card.valuation.gain,.asset-card.valuation .day-card.gain{background:#FFF8F9}
+.asset-card.valuation.loss,.asset-card.valuation .day-card.loss{background:#F5FAFF}
