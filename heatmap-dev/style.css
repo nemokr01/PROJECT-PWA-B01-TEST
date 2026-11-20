@@ -516,3 +516,9 @@ html,body,.app{background:#FAF8F5!important;background-image:none!important}
 /* V1_R070: correct index backgrounds: positive pink, negative blue */
 .index-card.index-up{background:#FFF6F8!important}
 .index-card.index-down{background:#F5F9FF!important}
+
+/* V1_R071: unify index values, changes and sparklines with gain red / loss blue */
+.index-card.index-up .index-value,.index-card.index-up .index-change,
+.index-card.index-up .spark.rising{color:#C52C42!important}
+.index-card.index-down .index-value,.index-card.index-down .index-change,
+.index-card.index-down .spark.falling{color:#2465B5!important}
