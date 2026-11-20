@@ -265,3 +265,9 @@
 .asset-card.valuation .day-card.gain strong,.asset-card.valuation .day-card.gain small{color:#C52C42}
 .asset-card.valuation .day-card.loss strong,.asset-card.valuation .day-card.loss small{color:#2465B5}
 .asset-card.valuation .day-card.flat strong,.asset-card.valuation .day-card.flat small{color:#536477}
+
+/* V1_R044: expand valuation content toward the day-over-day card */
+.asset-card.valuation{gap:2px}
+.asset-card.valuation .valuation-main{flex:1 1 auto;min-width:0}
+.asset-card.valuation .day-card{width:32%;flex:0 0 32%;min-width:78px}
+.asset-card.valuation .valuation-chart{display:block;width:100%}
