@@ -32,13 +32,26 @@ const INDICES=[
 ];
 const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스','한미반도체','DB하이텍']},{name:'자동차·배터리',stocks:['현대차','기아','현대모비스','LG에너지솔루션']},{name:'IT·바이오·기타',stocks:['NAVER','카카오','삼성바이오로직스','셀트리온','POSCO홀딩스','KB금융','신한지주','한국전력']}];
 const UNOWNED_EXAMPLES=['한전기술','두산에너빌리티'];
-// V1_R037: lightweight industry pictograms; no external image dependency.
-const STOCK_ICONS={
- '삼성전자':'▣','SK하이닉스':'▣','한미반도체':'▣','DB하이텍':'▣',
- '현대차':'🚗','기아':'🚗','현대모비스':'⚙','LG에너지솔루션':'▰',
- 'NAVER':'⌕','카카오':'✉','삼성바이오로직스':'⚕','셀트리온':'⚕',
- 'POSCO홀딩스':'⚒','KB금융':'₩','신한지주':'₩','한국전력':'ϟ'
+// V1_R038: compact monochrome abstract SVG symbols, no emoji or external assets.
+const ICON_PATHS={
+ chip:'<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 9h6v6H9zM9 2v4m6-4v4M9 18v4m6-4v4M2 9h4m-4 6h4m12-6h4m-4 6h4"/>',
+ mobility:'<path d="M4 17a9 9 0 0 1 16 0M12 16l5-6"/><circle cx="12" cy="16" r="1.5"/>',
+ gear:'<circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4M5 5l3 3m8 8 3 3M19 5l-3 3M8 16l-3 3"/>',
+ energy:'<path d="M13 2 6 13h6l-1 9 7-12h-6z"/>',
+ digital:'<path d="M4 17V7l8-4 8 4v10l-8 4zM8 10l4 4 4-4"/>',
+ message:'<path d="M4 5h16v11H9l-5 4zM8 10h8"/>',
+ bio:'<path d="M7 3c10 5 10 13 0 18M17 3C7 8 7 16 17 21M8 7h8M8 12h8M8 17h8"/>',
+ material:'<path d="m12 2 9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10"/>',
+ finance:'<path d="M3 17 9 11l4 3 8-9M15 5h6v6"/>',
+ utility:'<path d="M3 15h5l3-7 3 10 3-6h4"/>'
 };
+const STOCK_ICON_TYPES={
+ '삼성전자':'chip','SK하이닉스':'chip','한미반도체':'chip','DB하이텍':'chip',
+ '현대차':'mobility','기아':'mobility','현대모비스':'gear','LG에너지솔루션':'energy',
+ 'NAVER':'digital','카카오':'message','삼성바이오로직스':'bio','셀트리온':'bio',
+ 'POSCO홀딩스':'material','KB금융':'finance','신한지주':'finance','한국전력':'utility'
+};
+function industryIcon(name){const icon=el('span','stock-industry-icon');icon.setAttribute('aria-hidden','true');icon.innerHTML='<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICON_PATHS[STOCK_ICON_TYPES[name]||'digital']+'</svg>';return icon;}
 function tilePalette(change){
  const anchors=[[-4.5,'#123F98'],[-3,'#246CC5'],[-2,'#4B9ADD'],[-1,'#A4D3F2'],[0,'#8793A2'],[1,'#F6B4B7'],[2,'#F17A83'],[3,'#DF4356'],[4.5,'#A90E2B']];
  if(!Number.isFinite(change))return ['#788594','#FFFFFF'];
@@ -112,7 +125,7 @@ function render(data){
    const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
    tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
    tile.title=`${s.name} · ${theme.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
-   const caption=el('div','tile-caption');const icon=el('span','stock-industry-icon',STOCK_ICONS[s.name]||'◆');icon.setAttribute('aria-hidden','true');caption.append(icon,el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)));tile.append(caption);
+   const caption=el('div','tile-caption');const icon=industryIcon(s.name);caption.append(icon,el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)));tile.append(caption);
    tiles.append(tile);
   }
   group.append(tiles);root.append(group);
