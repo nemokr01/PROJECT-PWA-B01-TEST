@@ -19,7 +19,9 @@ const INDICES=[
  {name:'나스닥',value:'18,450.6',change:'+0.71%',dir:1,points:[11,23,20,33,29,47,44,59,55,72]},
  {name:'다우',value:'42,150.3',change:'-0.18%',dir:-1,points:[49,56,44,53,37,49,41,29,39,33]}
 ];
-const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스']},{name:'전력·에너지',stocks:['한전기술','두산에너빌리티']},{name:'자동차·기타',stocks:['현대차','NAVER','카카오']}];
+const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스']},{name:'자동차·기타',stocks:['현대차','NAVER','카카오']}];
+const UNOWNED_EXAMPLES=['한전기술','두산에너빌리티'];
+function tilePalette(change){if(change<=-3)return ['#124FAD','#FFFFFF'];if(change<=-1.5)return ['#2679CF','#FFFFFF'];if(change<0)return ['#79B9EE','#122B48'];if(change===0)return ['#788594','#FFFFFF'];if(change<1.5)return ['#F29A9F','#33212A'];if(change<3)return ['#E64B59','#FFFFFF'];return ['#B91C35','#FFFFFF'];}
 function spark(points,dir=1){if(!Array.isArray(points)||points.length<2||!points.every(Number.isFinite))throw Error('미니차트 데이터 오류');const w=160,h=55,min=Math.min(...points),max=Math.max(...points),span=max-min||1;const coords=points.map((n,i)=>`${(i/(points.length-1)*w).toFixed(1)},${(h-5-(n-min)/span*(h-12)).toFixed(1)}`).join(' ');return `<svg class="spark ${dir>0?'rising':dir<0?'falling':'neutral'}" viewBox="0 0 ${w} ${h}" aria-hidden="true" preserveAspectRatio="none"><polyline points="${coords}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
 function render(data){
@@ -44,13 +46,14 @@ function render(data){
    for(const name of group.stocks){
     const s=r.stocks.find(x=>x.name===name);
     const tile=el('article','heat-tile '+(s?(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'):'tile-demo'));
-    if(s){const weight=r.valuation?s.value/r.valuation:0;tile.style.setProperty('--weight',String(Math.max(weight*100,0.1)));tile.dataset.valuationWeight=String(weight);tile.style.width=s.value>0?`${(s.value*areaScale).toFixed(4)}px`:'72px';tile.dataset.valuationArea=String(s.value);tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));}
-    else {tile.style.setProperty('--weight','8');tile.style.width='72px';tile.append(el('span','tile-icon','◇'),el('span','tile-name',name),el('strong','tile-change','예시'),el('small','tile-weight','미보유 · 모의 배치'));}
+    if(s){const [bg,fg]=tilePalette(s.change);tile.style.background=bg;tile.style.color=fg;const weight=r.valuation?s.value/r.valuation:0;tile.style.setProperty('--weight',String(Math.max(weight*100,0.1)));tile.dataset.valuationWeight=String(weight);tile.style.width=s.value>0?`${(s.value*areaScale).toFixed(4)}px`:'72px';tile.dataset.valuationArea=String(s.value);tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));}
+    else {continue;}
     const chart=el('div','tile-spark');chart.innerHTML=spark(s?[13,22,20,37,32,44,42,59,54,65]:[15,22,18,30,26,37,34,49],s?.change||0);tile.append(chart);tiles.append(tile);
    }
    sector.append(tiles);root.append(sector);
  }
- byId('notice').textContent='보유 종목은 동일 높이·평가금액 비례 너비로 표시합니다. 최소 너비 72px, 좁은 화면은 가로 스크롤. 미보유 예시 타일은 평가비중에서 제외합니다.';
+ const demo=byId('unowned-examples');demo.replaceChildren();demo.append(el('strong','example-label','미보유 예시 · 히트맵 제외'));for(const name of UNOWNED_EXAMPLES)demo.append(el('span','example-name',name));
+ byId('notice').textContent='보유 평가금액 비례 · 7단계 등락률 색상';
 }
 if(typeof document!=='undefined'){try{render(MOCK);}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
 if(typeof module!=='undefined')module.exports={MOCK,validate,calculate,percent,spark,INDICES,SECTORS};
