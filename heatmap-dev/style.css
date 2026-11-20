@@ -306,3 +306,6 @@
  .asset-card.valuation .valuation-main>.profit-line{justify-content:center;text-align:center}
  .asset-card.valuation .valuation-main>.valuation-chart{height:70%!important;max-height:none!important}
 }
+
+/* V1_R047: slightly stronger translucent valuation background chart */
+.asset-card.valuation .valuation-main>.valuation-chart{opacity:.25!important;filter:saturate(.8)}
