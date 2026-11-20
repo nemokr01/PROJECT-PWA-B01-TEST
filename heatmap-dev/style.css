@@ -195,3 +195,20 @@
 .asset-left>.asset-card{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;text-align:center!important}
 .asset-left>.asset-card>.asset-label{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;text-align:center!important}
 .asset-left>.asset-card>strong{display:block!important;width:100%!important;margin-top:5px!important;text-align:center!important;white-space:nowrap!important;font-variant-numeric:tabular-nums!important}
+
+
+/* V1_R032: existing stock sparkline only — stronger contrast and move directly below caption */
+@media(max-width:600px) and (orientation:portrait){
+ #sector-grid .theme-tiles>.heat-tile:not(.tile-micro){justify-content:center!important}
+ #sector-grid .theme-tiles>.heat-tile .tile-spark{
+   position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;
+   display:block!important;flex:0 0 auto!important;align-self:center!important;
+   width:92%!important;height:clamp(12px,2.8vh,24px)!important;
+   margin:5px 0 0!important;opacity:1!important;z-index:3!important;
+   color:#fff!important;pointer-events:none!important;
+ }
+ #sector-grid .theme-tiles>.heat-tile .tile-spark .spark{color:#fff!important;filter:drop-shadow(0 1px 1px rgba(0,0,0,.65))}
+ #sector-grid .theme-tiles>.heat-tile .tile-spark polyline{stroke:#fff!important;stroke-width:4!important;vector-effect:non-scaling-stroke}
+ #sector-grid .theme-tiles>.heat-tile.tile-tiny .tile-spark{display:block!important;height:12px!important;margin-top:2px!important;width:90%!important}
+ #sector-grid .theme-tiles>.heat-tile.tile-micro .tile-spark{display:none!important}
+}
