@@ -21,7 +21,21 @@ const INDICES=[
 ];
 const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스']},{name:'자동차·기타',stocks:['현대차','NAVER','카카오']}];
 const UNOWNED_EXAMPLES=['한전기술','두산에너빌리티'];
-function tilePalette(change){if(change<=-3)return ['#124FAD','#FFFFFF'];if(change<=-1.5)return ['#2679CF','#FFFFFF'];if(change<0)return ['#79B9EE','#122B48'];if(change===0)return ['#788594','#FFFFFF'];if(change<1.5)return ['#F29A9F','#33212A'];if(change<3)return ['#E64B59','#FFFFFF'];return ['#B91C35','#FFFFFF'];}
+function tilePalette(change){
+ const anchors=[[-3,'#124FAD'],[-2,'#2679CF'],[-1,'#79B9EE'],[0,'#788594'],[1,'#F29A9F'],[2,'#E64B59'],[3,'#B91C35']];
+ if(!Number.isFinite(change))return ['#788594','#FFFFFF'];
+ const x=Math.max(-3,Math.min(3,change));
+ let hex=anchors[anchors.length-1][1];
+ if(x<=-3)hex=anchors[0][1];
+ else for(let i=1;i<anchors.length;i++){if(x<=anchors[i][0]){
+  const [p,from]=anchors[i-1],[q,to]=anchors[i],t=(x-p)/(q-p);
+  const rgb=[0,1,2].map(j=>Math.round(parseInt(from.slice(1+j*2,3+j*2),16)*(1-t)+parseInt(to.slice(1+j*2,3+j*2),16)*t));
+  hex='#'+rgb.map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase();break;
+ }}
+ const rgb=[1,3,5].map(j=>parseInt(hex.slice(j,j+2),16)/255).map(v=>v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4));
+ const luminance=.2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];
+ return [hex,luminance>.32?'#122B48':'#FFFFFF'];
+}
 function spark(points,dir=1){if(!Array.isArray(points)||points.length<2||!points.every(Number.isFinite))throw Error('미니차트 데이터 오류');const w=160,h=55,min=Math.min(...points),max=Math.max(...points),span=max-min||1;const coords=points.map((n,i)=>`${(i/(points.length-1)*w).toFixed(1)},${(h-5-(n-min)/span*(h-12)).toFixed(1)}`).join(' ');return `<svg class="spark ${dir>0?'rising':dir<0?'falling':'neutral'}" viewBox="0 0 ${w} ${h}" aria-hidden="true" preserveAspectRatio="none"><polyline points="${coords}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
 function render(data){
