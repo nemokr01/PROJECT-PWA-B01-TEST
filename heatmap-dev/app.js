@@ -300,6 +300,8 @@ function ensureExitDialog(){
 }
 function openExitDialog(){
  const overlay=ensureExitDialog();overlay.hidden=false;
+ // Restore a history entry so another hardware back dismisses the dialog.
+ if(location.hash!==HOME_GUARD_HASH)history.pushState({pwaHomeGuardV1:true},'',location.pathname+location.search+HOME_GUARD_HASH);
  overlay.querySelector('.pwa-exit-cancel').focus();
 }
 function closeExitDialog(){
