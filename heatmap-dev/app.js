@@ -182,16 +182,30 @@ function setupHeatmapSwipe(){
  const toggle=document.getElementById('heatmap-mode');
  if(toggle)toggle.addEventListener('click',()=>updateHeatmapMode(heatmapMode==='daily'?'return':'daily'));
  const root=document.getElementById('sector-grid');if(!root)return;
+ // V1_R079: recognize a deliberate horizontal gesture while moving, before
+ // Android Chrome can cancel touchend. Both directions toggle either mode.
  let start=null;
- root.addEventListener('touchstart',e=>{start=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
- root.addEventListener('touchcancel',()=>{start=null;},{passive:true});
- root.addEventListener('touchend',e=>{
-  if(!start||e.changedTouches.length!==1){start=null;return;}
-  const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;start=null;
-  if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.5)return;
-  // V1_R077: either horizontal direction toggles the current heatmap mode.
-  updateHeatmapMode(heatmapMode==='daily'?'return':'daily');
+ function toggleOnce(x,y){
+  if(!start||start.done)return;
+  const dx=x-start.x,dy=y-start.y;
+  if(Math.abs(dy)>28&&Math.abs(dy)>Math.abs(dx)){start=null;return;}
+  if(Math.abs(dx)>=45&&Math.abs(dx)>Math.abs(dy)*1.35){
+   start.done=true;
+   updateHeatmapMode(heatmapMode==='daily'?'return':'daily');
+  }
+ }
+ root.addEventListener('touchstart',e=>{
+  start=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY,done:false}:null;
  },{passive:true});
+ root.addEventListener('touchmove',e=>{
+  if(e.touches.length!==1){start=null;return;}
+  toggleOnce(e.touches[0].clientX,e.touches[0].clientY);
+ },{passive:true});
+ root.addEventListener('touchend',e=>{
+  if(e.changedTouches.length===1)toggleOnce(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
+  start=null;
+ },{passive:true});
+ root.addEventListener('touchcancel',()=>{start=null;},{passive:true});
 }
 function render(data){
  const r=calculate(data),byId=id=>document.getElementById(id);
