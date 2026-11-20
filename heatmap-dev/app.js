@@ -262,68 +262,14 @@ function hideStockDetail(fromHistory=false){
  document.getElementById('briefing-panel')?.classList.remove('show-stock-detail');
  document.querySelectorAll('#sector-grid .heat-tile').forEach(t=>t.classList.remove('selected-stock'));
 }
-// V1_R086: exit confirmation, with a single home guard and no synthetic history loops.
-const HOME_GUARD_HASH='#pwa-home';
-let exitDialog=null;
-let exitConfirmed=false;
-let exitNoticeTimer=null;
-function homeBaseUrl(){return location.pathname+location.search;}
-function armHomeBackGuard(){
- // A refresh at the guard URL must not accumulate a second guard entry.
- if(location.hash===HOME_GUARD_HASH){
-  history.replaceState({pwaHomeBase:true},'',homeBaseUrl());
- }
- history.pushState({pwaHomeGuardV1:true},'',homeBaseUrl()+HOME_GUARD_HASH);
+// V1_R087: restore Chrome's default home back behavior.
+// Preserve only the stock-detail-to-briefing back navigation.
+if(location.hash==='#pwa-home'){
+ history.replaceState({},'',location.pathname+location.search);
 }
-function ensureExitDialog(){
- if(exitDialog)return exitDialog;
- const overlay=el('div','pwa-exit-overlay');overlay.hidden=true;
- const dialog=el('section','pwa-exit-dialog');
- dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','pwa-exit-title');
- const title=el('h2','','앱을 종료하시겠습니까?');title.id='pwa-exit-title';
- const description=el('p','','종료를 선택하면 앱 닫기를 시도합니다.');
- const actions=el('div','pwa-exit-actions');
- const cancel=el('button','pwa-exit-cancel','취소');cancel.type='button';
- const confirm=el('button','pwa-exit-confirm','종료');confirm.type='button';
- cancel.addEventListener('click',closeExitDialog);
- confirm.addEventListener('click',()=>{
-  exitConfirmed=true;overlay.hidden=true;
-  // Installed Chrome PWAs do not expose a guaranteed native close API.
-  // Try window.close, then the browser back path; do not invent a blank screen.
-  try{window.close();}catch(e){console.warn('PWA close unavailable',e);}
-  history.back();
-  clearTimeout(exitNoticeTimer);
-  exitNoticeTimer=setTimeout(()=>{
-   if(document.visibilityState==='visible'){
-    exitConfirmed=false;
-    openExitDialog('Chrome에서 앱을 자동 종료하지 못했습니다. 갤럭시 홈 제스처로 종료해 주세요.');
-   }
-  },500);
- });
- actions.append(cancel,confirm);dialog.append(title,description,actions);overlay.append(dialog);
- overlay.addEventListener('click',e=>{if(e.target===overlay)closeExitDialog();});
- document.addEventListener('keydown',e=>{if(!overlay.hidden)return;if(e.key==='Escape'){e.preventDefault();closeExitDialog();}});
- document.body.append(overlay);exitDialog=overlay;return overlay;
-}
-function openExitDialog(message){
- const overlay=ensureExitDialog();
- overlay.querySelector('p').textContent=message||'종료를 선택하면 앱 닫기를 시도합니다.';
- overlay.hidden=false;overlay.querySelector('.pwa-exit-cancel').focus();
-}
-function closeExitDialog(){
- if(!exitDialog||exitDialog.hidden)return;
- exitDialog.hidden=true;exitConfirmed=false;
- // The guard was consumed by Back. Only Cancel restores one guard entry.
- if(location.hash!==HOME_GUARD_HASH)history.pushState({pwaHomeGuardV1:true},'',homeBaseUrl()+HOME_GUARD_HASH);
-}
-function onPwaBack(){
- if(selectedStockName){hideStockDetail(true);return;}
- if(exitConfirmed)return;
- // Pop of the home guard: show modal without adding another history entry.
- if(location.hash!==HOME_GUARD_HASH)openExitDialog();
-}
-window.addEventListener('popstate',onPwaBack);
-armHomeBackGuard();
+window.addEventListener('popstate',()=>{
+ if(selectedStockName)hideStockDetail(true);
+});
 // V1_R073: switch heatmap values without changing evaluation-weighted tile layout.
 let heatmapMode='daily';
 let heatmapStocks=[];
