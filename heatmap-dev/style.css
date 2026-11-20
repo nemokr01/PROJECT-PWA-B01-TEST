@@ -509,3 +509,6 @@ html,body,.app{background:#FAFCFF!important;background-image:none!important}
 
 /* V1_R068: slightly stronger cool-white overall background; preserve all cards */
 html,body,.app{background:#F7FAFF!important;background-image:none!important}
+
+/* V1_R069: approved warm ivory overall canvas; preserve card colors and layout */
+html,body,.app{background:#FAF8F5!important;background-image:none!important}
