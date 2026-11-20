@@ -385,3 +385,9 @@
 .asset-card.valuation.flat{border:1px solid #e7ebf0!important;box-shadow:none!important}
 .asset-card.valuation .day-card{background:#fff!important}
 .asset-card.valuation .day-card.flat{border:1px solid #e7ebf0!important;box-shadow:none!important}
+
+/* V1_R055: trial reverse + / - neon border colors only */
+.asset-card.valuation.gain{border-color:#378bea!important;box-shadow:inset 0 0 5px rgba(55,139,234,.23),0 0 5px rgba(55,139,234,.23)!important}
+.asset-card.valuation.loss{border-color:#e84a65!important;box-shadow:inset 0 0 5px rgba(232,74,101,.23),0 0 5px rgba(232,74,101,.23)!important}
+.asset-card.valuation .day-card.gain{border-color:#378bea!important;box-shadow:inset 0 0 5px rgba(55,139,234,.23),0 0 5px rgba(55,139,234,.23)!important}
+.asset-card.valuation .day-card.loss{border-color:#e84a65!important;box-shadow:inset 0 0 5px rgba(232,74,101,.23),0 0 5px rgba(232,74,101,.23)!important}
