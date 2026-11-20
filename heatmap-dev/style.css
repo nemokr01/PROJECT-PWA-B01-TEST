@@ -252,15 +252,15 @@
 #sector-grid .theme-tiles>.heat-tile.tile-micro .tile-name .name-short{font-size:8px!important;letter-spacing:-.07em!important}
 
 /* V1_R042: independent sign-driven asset card colors; DEV mock negative daily change */
-.asset-card.valuation.gain{background:#F9DADD}
-.asset-card.valuation.loss{background:#DCEBFA}
+.asset-card.valuation.gain{background:#FFF0F2}
+.asset-card.valuation.loss{background:#EDF6FF}
 .asset-card.valuation.flat{background:#EDF0F4}
 .asset-card.valuation.gain .profit-line{color:#C52C42}
 .asset-card.valuation.loss .profit-line{color:#2465B5}
 .asset-card.valuation.flat .profit-line{color:#536477}
 .asset-card.valuation .profit-line span{color:inherit}
-.asset-card.valuation .day-card.gain{background:#F9DADD}
-.asset-card.valuation .day-card.loss{background:#DCEBFA}
+.asset-card.valuation .day-card.gain{background:#FFF0F2}
+.asset-card.valuation .day-card.loss{background:#EDF6FF}
 .asset-card.valuation .day-card.flat{background:#EDF0F4}
 .asset-card.valuation .day-card.gain strong,.asset-card.valuation .day-card.gain small{color:#C52C42}
 .asset-card.valuation .day-card.loss strong,.asset-card.valuation .day-card.loss small{color:#2465B5}
