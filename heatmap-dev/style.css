@@ -144,3 +144,8 @@
  .squarified-tiles>.heat-tile.tile-micro .tile-change,.squarified-tiles>.heat-tile.tile-micro .tile-icon{display:none!important}
  .squarified-tiles>.heat-tile.tile-micro .tile-name{font-size:8px!important}
 }
+
+/* V1_R025: treemap geometry must override old fixed/clamped tile widths */
+@media(max-width:600px) and (orientation:portrait){
+ .sector-tiles.squarified-tiles>.heat-tile{width:auto!important;max-width:none!important;min-width:0!important;height:auto!important;max-height:none!important;min-height:0!important;flex:none!important}
+}
