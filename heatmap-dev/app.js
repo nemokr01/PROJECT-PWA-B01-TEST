@@ -32,6 +32,13 @@ const INDICES=[
 ];
 const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스','한미반도체','DB하이텍']},{name:'자동차·배터리',stocks:['현대차','기아','현대모비스','LG에너지솔루션']},{name:'IT·바이오·기타',stocks:['NAVER','카카오','삼성바이오로직스','셀트리온','POSCO홀딩스','KB금융','신한지주','한국전력']}];
 const UNOWNED_EXAMPLES=['한전기술','두산에너빌리티'];
+// V1_R037: lightweight industry pictograms; no external image dependency.
+const STOCK_ICONS={
+ '삼성전자':'▣','SK하이닉스':'▣','한미반도체':'▣','DB하이텍':'▣',
+ '현대차':'🚗','기아':'🚗','현대모비스':'⚙','LG에너지솔루션':'▰',
+ 'NAVER':'⌕','카카오':'✉','삼성바이오로직스':'⚕','셀트리온':'⚕',
+ 'POSCO홀딩스':'⚒','KB금융':'₩','신한지주':'₩','한국전력':'ϟ'
+};
 function tilePalette(change){
  const anchors=[[-4.5,'#123F98'],[-3,'#246CC5'],[-2,'#4B9ADD'],[-1,'#A4D3F2'],[0,'#8793A2'],[1,'#F6B4B7'],[2,'#F17A83'],[3,'#DF4356'],[4.5,'#A90E2B']];
  if(!Number.isFinite(change))return ['#788594','#FFFFFF'];
@@ -105,7 +112,7 @@ function render(data){
    const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
    tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
    tile.title=`${s.name} · ${theme.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
-   const caption=el('div','tile-caption');caption.append(el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)));tile.append(caption);
+   const caption=el('div','tile-caption');const icon=el('span','stock-industry-icon',STOCK_ICONS[s.name]||'◆');icon.setAttribute('aria-hidden','true');caption.append(icon,el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)));tile.append(caption);
    tiles.append(tile);
   }
   group.append(tiles);root.append(group);
