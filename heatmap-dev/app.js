@@ -262,11 +262,12 @@ function hideStockDetail(fromHistory=false){
  document.getElementById('briefing-panel')?.classList.remove('show-stock-detail');
  document.querySelectorAll('#sector-grid .heat-tile').forEach(t=>t.classList.remove('selected-stock'));
 }
-// V1_R083: one back on home warns, a second within 2s allows leaving.
-const HOME_GUARD_KEY='pwaHomeGuardV1';
+// V1_R084: explicit same-document hash entry for Galaxy installed PWA back.
+const HOME_GUARD_HASH='#pwa-home';
 let homeExitDeadline=0;
 let homeExitTimer=null;
 let homeExitToast=null;
+let allowHomeExit=false;
 function showHomeExitHint(){
  if(!homeExitToast){
   homeExitToast=el('div','pwa-exit-toast');
@@ -274,27 +275,36 @@ function showHomeExitHint(){
   homeExitToast.setAttribute('aria-live','polite');
   document.body.append(homeExitToast);
  }
- homeExitToast.textContent='종료하려면 뒤로가기를 한 번 더 누르세요';
+ homeExitToast.textContent='종료하려면 2초 안에 뒤로가기를 한 번 더 누르세요';
  homeExitToast.classList.add('visible');
  clearTimeout(homeExitTimer);
  homeExitTimer=setTimeout(()=>homeExitToast?.classList.remove('visible'),2000);
 }
 function armHomeBackGuard(){
- if(history.state?.[HOME_GUARD_KEY])return;
- history.pushState({...history.state,[HOME_GUARD_KEY]:true},'',location.href);
+ if(location.hash===HOME_GUARD_HASH)return;
+ history.pushState({pwaHomeGuardV1:true},'',location.pathname+location.search+HOME_GUARD_HASH);
 }
-window.addEventListener('popstate',()=>{
- if(selectedStockName){hideStockDetail(true);return;}
+function onPwaBack(){
+ if(selectedStockName){
+  hideStockDetail(true);
+  // If the stock entry was removed, home hash remains available for the next back.
+  return;
+ }
+ if(allowHomeExit)return;
  if(Date.now()<homeExitDeadline){
+  allowHomeExit=true;
   homeExitDeadline=0;
-  // Leave the synthetic guard and original home entry; browser/PWA controls actual exit.
-  history.go(-1);
+  homeExitToast?.classList.remove('visible');
+  // The browser is already at the original entry after popping the hash guard.
+  // Do not call history.go(-1): it can skip the intended home transition.
   return;
  }
  homeExitDeadline=Date.now()+2000;
  showHomeExitHint();
  armHomeBackGuard();
-});
+}
+window.addEventListener('popstate',onPwaBack);
+// A fragment entry is more visible to Android Chrome navigation than same-URL state.
 armHomeBackGuard();
 // V1_R073: switch heatmap values without changing evaluation-weighted tile layout.
 let heatmapMode='daily';
