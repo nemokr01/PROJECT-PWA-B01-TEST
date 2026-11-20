@@ -220,3 +220,18 @@
  #sector-grid .theme-tiles>.heat-tile.tile-flat .tile-spark polyline{stroke:#34475e!important}
  #sector-grid .theme-tiles>.heat-tile .tile-spark .spark{filter:none!important}
 }
+
+/* V1_R035: make the existing sparkline a subtle background texture, not a focal element */
+@media(max-width:600px) and (orientation:portrait){
+ #sector-grid .theme-tiles>.heat-tile .tile-spark{
+   opacity:.24!important;
+   z-index:0!important;
+   margin-top:3px!important;
+ }
+ #sector-grid .theme-tiles>.heat-tile .tile-spark polyline{
+   stroke:#fff!important;
+   stroke-width:1.5!important;
+   vector-effect:non-scaling-stroke;
+ }
+ #sector-grid .theme-tiles>.heat-tile .tile-spark .spark{filter:none!important}
+}
