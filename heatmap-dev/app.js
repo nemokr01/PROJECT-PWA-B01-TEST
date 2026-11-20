@@ -3,9 +3,20 @@
 const MOCK = Object.freeze({cash:1450000,stocks:[
  {name:'삼성전자',buy:65000,price:71000,qty:12,change:1.8},
  {name:'SK하이닉스',buy:190000,price:205000,qty:4,change:4.7},
+ {name:'한미반도체',buy:110000,price:119000,qty:2,change:7.1},
+ {name:'DB하이텍',buy:53000,price:52000,qty:2,change:-2.2},
  {name:'현대차',buy:245000,price:232000,qty:3,change:-3.2},
+ {name:'기아',buy:105000,price:110000,qty:4,change:3.1},
+ {name:'현대모비스',buy:230000,price:238000,qty:1,change:-0.4},
+ {name:'LG에너지솔루션',buy:330000,price:345000,qty:1,change:5.4},
  {name:'NAVER',buy:205000,price:205000,qty:2,change:0.4},
- {name:'카카오',buy:47000,price:44000,qty:8,change:-4.6}
+ {name:'카카오',buy:47000,price:44000,qty:8,change:-4.6},
+ {name:'삼성바이오로직스',buy:820000,price:845000,qty:1,change:0.1},
+ {name:'셀트리온',buy:180000,price:174000,qty:2,change:-1.6},
+ {name:'POSCO홀딩스',buy:360000,price:350000,qty:1,change:-5.8},
+ {name:'KB금융',buy:79000,price:83000,qty:5,change:2.6},
+ {name:'신한지주',buy:52000,price:53500,qty:3,change:0},
+ {name:'한국전력',buy:22000,price:23000,qty:7,change:1.1}
 ]});
 const won=n=>new Intl.NumberFormat('ko-KR',{style:'currency',currency:'KRW',maximumFractionDigits:0}).format(n);
 const percent=n=>Number.isFinite(n)?`${n>=0?'+':''}${n.toFixed(2)}%`:'—';
@@ -19,7 +30,7 @@ const INDICES=[
  {name:'나스닥',value:'18,450.6',change:'+0.71%',dir:1,points:[11,23,20,33,29,47,44,59,55,72]},
  {name:'다우',value:'42,150.3',change:'-0.18%',dir:-1,points:[49,56,44,53,37,49,41,29,39,33]}
 ];
-const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스']},{name:'자동차·기타',stocks:['현대차','NAVER','카카오']}];
+const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스','한미반도체','DB하이텍']},{name:'자동차·배터리',stocks:['현대차','기아','현대모비스','LG에너지솔루션']},{name:'IT·바이오·기타',stocks:['NAVER','카카오','삼성바이오로직스','셀트리온','POSCO홀딩스','KB금융','신한지주','한국전력']}];
 const UNOWNED_EXAMPLES=['한전기술','두산에너빌리티'];
 function tilePalette(change){
  const anchors=[[-4.5,'#123F98'],[-3,'#246CC5'],[-2,'#4B9ADD'],[-1,'#A4D3F2'],[0,'#8793A2'],[1,'#F6B4B7'],[2,'#F17A83'],[3,'#DF4356'],[4.5,'#A90E2B']];
