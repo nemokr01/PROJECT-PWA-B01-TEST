@@ -41,3 +41,26 @@
 
 /* V1_R014: help-triggered 9-anchor color guide, hidden by default */
 .heatmap-section{position:relative;grid-template-rows:minmax(0,1fr) auto auto!important;overflow:visible!important}.legend-help{position:absolute;right:3px;top:0;z-index:4;display:grid;place-items:center;width:27px;height:27px;border-radius:50%;border:1px solid #9eb6cc;background:#f7fbff;color:#245377;font-size:16px;font-weight:700;line-height:1;cursor:pointer;box-shadow:0 1px 3px #1232}.legend-popup{position:absolute;z-index:8;top:30px;right:0;width:min(100%,420px);box-sizing:border-box;background:#fff;border:1px solid #b8cce0;border-radius:12px;padding:12px;box-shadow:0 8px 24px #152f4a38;color:#243b54}.legend-popup[hidden]{display:none!important}.legend-popup-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px}.legend-popup-head button{border:0;background:transparent;font-size:23px;color:#314d66;cursor:pointer;padding:0 4px}.legend-popup .scale-legend{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));height:auto!important;gap:5px!important;overflow:visible!important}.legend-popup .scale-item{min-height:25px;font-size:10px}.legend-popup p{margin:10px 0 0;font-size:11px;line-height:1.6;color:#475c70}@media(max-width:600px) and (orientation:portrait){.heatmap-section{grid-template-rows:minmax(0,1fr) 24px 12px!important}.legend-help{width:25px;height:25px;font-size:15px}.legend-popup{top:29px;max-width:100%;padding:10px}.legend-popup .scale-legend{grid-template-columns:repeat(5,minmax(0,1fr))}}@media(max-width:600px) and (orientation:portrait) and (max-height:650px){.heatmap-section{grid-template-rows:minmax(0,1fr) 20px 10px!important}}
+
+/* V1_R015: Galaxy portrait compact assets/indices; dedicate saved height to heatmap */
+@media(max-width:600px) and (orientation:portrait){
+ main{grid-template-rows:minmax(88px,.83fr) minmax(66px,.61fr) minmax(0,3.72fr) minmax(62px,.72fr);gap:6px}
+ .asset-grid,.asset-left{gap:5px}
+ .asset-card{padding:5px 7px;border-radius:11px}
+ .asset-card strong{margin-top:3px;font-size:clamp(14px,4vw,19px)}
+ .asset-label{font-size:11px;gap:4px}
+ .symbol{width:20px;height:20px;font-size:13px}
+ .valuation{padding:5px 7px;gap:4px}
+ .valuation .asset-label{font-size:12px}
+ .valuation strong{font-size:clamp(15px,4.5vw,21px)}
+ .valuation-chart{height:22px;margin-top:1px}
+ .profit-line{font-size:10px;gap:3px}
+ .day-card{padding:3px 2px;gap:2px;border-radius:10px}
+ .day-card span{font-size:9px}.day-card strong{font-size:15px}.day-card small{font-size:9px}
+ .market{grid-template-rows:minmax(0,1fr) 6px;gap:3px}
+ .index-card{padding:4px 5px;border-radius:9px}
+ .index-name,.index-change{font-size:10px}.index-value{font-size:11px;margin-top:1px}
+ .index-spark{height:16px;margin-top:2px}
+ .pagination>*{height:5px}
+}
+@media(max-width:600px) and (orientation:portrait) and (max-height:650px){main{grid-template-rows:minmax(80px,.83fr) minmax(58px,.61fr) minmax(0,3.72fr) minmax(49px,.72fr);gap:4px}.valuation-chart{height:16px}.index-spark{height:12px}}
