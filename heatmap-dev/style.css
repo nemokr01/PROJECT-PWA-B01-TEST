@@ -80,3 +80,7 @@
 
 /* V1_R017: place legend help entirely inside sector-heading row, not over stock tiles */
 @media(max-width:600px) and (orientation:portrait){.legend-help{top:0;right:12px;width:21px;height:21px;font-size:13px;line-height:1;z-index:4}.legend-popup{top:25px}}
+
+/* V1_R018: borderless question mark, preserving its touch target and popup */
+.legend-help{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:rgba(36,83,119,.48)}
+.legend-help:hover,.legend-help:focus-visible,.legend-help[aria-expanded="true"]{background:transparent!important;box-shadow:none!important;color:rgba(36,83,119,.85)}
