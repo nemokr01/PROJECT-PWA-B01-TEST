@@ -262,73 +262,65 @@ function hideStockDetail(fromHistory=false){
  document.getElementById('briefing-panel')?.classList.remove('show-stock-detail');
  document.querySelectorAll('#sector-grid .heat-tile').forEach(t=>t.classList.remove('selected-stock'));
 }
-// V1_R085: home back opens an accessible exit confirmation overlay.
+// V1_R086: exit confirmation, with a single home guard and no synthetic history loops.
 const HOME_GUARD_HASH='#pwa-home';
 let exitDialog=null;
-let exitRequested=false;
-let ignoreNextPop=false;
+let exitConfirmed=false;
+let exitNoticeTimer=null;
+function homeBaseUrl(){return location.pathname+location.search;}
+function armHomeBackGuard(){
+ // A refresh at the guard URL must not accumulate a second guard entry.
+ if(location.hash===HOME_GUARD_HASH){
+  history.replaceState({pwaHomeBase:true},'',homeBaseUrl());
+ }
+ history.pushState({pwaHomeGuardV1:true},'',homeBaseUrl()+HOME_GUARD_HASH);
+}
 function ensureExitDialog(){
  if(exitDialog)return exitDialog;
  const overlay=el('div','pwa-exit-overlay');overlay.hidden=true;
  const dialog=el('section','pwa-exit-dialog');
- dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');
- dialog.setAttribute('aria-labelledby','pwa-exit-title');
- const title=el('h2','', '앱을 종료하시겠습니까?');title.id='pwa-exit-title';
- const description=el('p','','PROJECT PWA를 종료하고 갤럭시 홈 화면으로 돌아갑니다.');
+ dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','pwa-exit-title');
+ const title=el('h2','','앱을 종료하시겠습니까?');title.id='pwa-exit-title';
+ const description=el('p','','종료를 선택하면 앱 닫기를 시도합니다.');
  const actions=el('div','pwa-exit-actions');
  const cancel=el('button','pwa-exit-cancel','취소');cancel.type='button';
  const confirm=el('button','pwa-exit-confirm','종료');confirm.type='button';
  cancel.addEventListener('click',closeExitDialog);
  confirm.addEventListener('click',()=>{
-  exitRequested=true;overlay.hidden=true;
-  // Web apps cannot guarantee native task termination. Return through browser history.
-  history.go(-2);
+  exitConfirmed=true;overlay.hidden=true;
+  // Installed Chrome PWAs do not expose a guaranteed native close API.
+  // Try window.close, then the browser back path; do not invent a blank screen.
+  try{window.close();}catch(e){console.warn('PWA close unavailable',e);}
+  history.back();
+  clearTimeout(exitNoticeTimer);
+  exitNoticeTimer=setTimeout(()=>{
+   if(document.visibilityState==='visible'){
+    exitConfirmed=false;
+    openExitDialog('Chrome에서 앱을 자동 종료하지 못했습니다. 갤럭시 홈 제스처로 종료해 주세요.');
+   }
+  },500);
  });
  actions.append(cancel,confirm);dialog.append(title,description,actions);overlay.append(dialog);
  overlay.addEventListener('click',e=>{if(e.target===overlay)closeExitDialog();});
- document.addEventListener('keydown',e=>{
-  if(overlay.hidden)return;
-  if(e.key==='Escape'){e.preventDefault();closeExitDialog();}
-  if(e.key==='Tab'){
-   const focusables=[cancel,confirm],index=focusables.indexOf(document.activeElement);
-   if(e.shiftKey&&index<=0){e.preventDefault();confirm.focus();}
-   else if(!e.shiftKey&&index===1){e.preventDefault();cancel.focus();}
-  }
- });
- document.body.append(overlay);exitDialog=overlay;
- return overlay;
+ document.addEventListener('keydown',e=>{if(!overlay.hidden)return;if(e.key==='Escape'){e.preventDefault();closeExitDialog();}});
+ document.body.append(overlay);exitDialog=overlay;return overlay;
 }
-function openExitDialog(){
- const overlay=ensureExitDialog();overlay.hidden=false;
- // Restore a history entry so another hardware back dismisses the dialog.
- if(location.hash!==HOME_GUARD_HASH)history.pushState({pwaHomeGuardV1:true},'',location.pathname+location.search+HOME_GUARD_HASH);
- overlay.querySelector('.pwa-exit-cancel').focus();
+function openExitDialog(message){
+ const overlay=ensureExitDialog();
+ overlay.querySelector('p').textContent=message||'종료를 선택하면 앱 닫기를 시도합니다.';
+ overlay.hidden=false;overlay.querySelector('.pwa-exit-cancel').focus();
 }
 function closeExitDialog(){
  if(!exitDialog||exitDialog.hidden)return;
- exitDialog.hidden=true;
- if(location.hash!==HOME_GUARD_HASH){
-  ignoreNextPop=true;
-  history.pushState({pwaHomeGuardV1:true},'',location.pathname+location.search+HOME_GUARD_HASH);
-  // pushState does not emit popstate; clear immediately.
-  ignoreNextPop=false;
- }
- document.querySelector('#sector-grid .heat-tile')?.blur();
-}
-function armHomeBackGuard(){
- if(location.hash===HOME_GUARD_HASH){
-  history.replaceState({},'',location.pathname+location.search);
- }
- history.pushState({pwaHomeGuardV1:true},'',location.pathname+location.search+HOME_GUARD_HASH);
+ exitDialog.hidden=true;exitConfirmed=false;
+ // The guard was consumed by Back. Only Cancel restores one guard entry.
+ if(location.hash!==HOME_GUARD_HASH)history.pushState({pwaHomeGuardV1:true},'',homeBaseUrl()+HOME_GUARD_HASH);
 }
 function onPwaBack(){
- if(ignoreNextPop||exitRequested)return;
  if(selectedStockName){hideStockDetail(true);return;}
- if(exitDialog&&!exitDialog.hidden){
-  // Hardware back while dialog is open dismisses it, preserving home.
-  closeExitDialog();return;
- }
- openExitDialog();
+ if(exitConfirmed)return;
+ // Pop of the home guard: show modal without adding another history entry.
+ if(location.hash!==HOME_GUARD_HASH)openExitDialog();
 }
 window.addEventListener('popstate',onPwaBack);
 armHomeBackGuard();
