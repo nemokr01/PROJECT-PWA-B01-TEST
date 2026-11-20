@@ -143,8 +143,51 @@ function layoutTreemap(){
   }
  }
 }
+// V1_R073: switch heatmap values without changing evaluation-weighted tile layout.
+let heatmapMode='daily';
+let heatmapStocks=[];
+function stockHeatValue(s){return heatmapMode==='daily'?s.change:(s.invested>0?s.profit/s.invested*100:null);}
+function updateHeatmapMode(mode){
+ if(mode!=='daily'&&mode!=='return')return;
+ heatmapMode=mode;
+ const root=document.getElementById('sector-grid');if(!root)return;
+ const title=mode==='daily'?'등락률':'수익률';
+ const label=document.getElementById('heatmap-mode');
+ if(label)label.textContent=mode==='daily'?'당일 등락률 · 왼쪽으로 밀면 보유 수익률':'보유 수익률 · 오른쪽으로 밀면 당일 등락률';
+ const help=document.getElementById('legend-help'),popup=document.getElementById('legend-popup');
+ if(help)help.setAttribute('aria-label',title+' 색상 범례 보기');
+ if(popup)popup.setAttribute('aria-label',title+' 색상 안내');
+ const heading=popup?.querySelector('.legend-popup-head strong');
+ if(heading)heading.textContent=title+' 색상 안내';
+ const scale=popup?.querySelector('.scale-legend');
+ if(scale)scale.setAttribute('aria-label','9단계 '+title+' 색상표');
+ const total=heatmapStocks.reduce((sum,s)=>sum+s.value,0);
+ for(const tile of root.querySelectorAll('.heat-tile')){
+  const stock=heatmapStocks.find(s=>s.name===tile.dataset.name);if(!stock)continue;
+  const value=stockHeatValue(stock),[bg,fg]=tilePalette(value);
+  tile.style.background=bg;tile.style.color=fg;
+  tile.classList.toggle('tile-up',value>0);tile.classList.toggle('tile-down',value<0);
+  tile.classList.toggle('tile-flat',value===0||value===null);
+  const number=tile.querySelector('.tile-change');if(number)number.textContent=percent(value);
+  tile.title=`${stock.name} · ${title} ${percent(value)} · 평가비중 ${total?(stock.value/total*100).toFixed(1):'0.0'}%`;
+ }
+}
+function setupHeatmapSwipe(){
+ const root=document.getElementById('sector-grid');if(!root)return;
+ let start=null;
+ root.addEventListener('touchstart',e=>{start=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
+ root.addEventListener('touchcancel',()=>{start=null;},{passive:true});
+ root.addEventListener('touchend',e=>{
+  if(!start||e.changedTouches.length!==1){start=null;return;}
+  const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;start=null;
+  if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.5)return;
+  if(dx<0&&heatmapMode==='daily')updateHeatmapMode('return');
+  else if(dx>0&&heatmapMode==='return')updateHeatmapMode('daily');
+ },{passive:true});
+}
 function render(data){
  const r=calculate(data),byId=id=>document.getElementById(id);
+  heatmapStocks=r.stocks;
  byId('invested').textContent=won(r.invested);byId('cash').textContent=won(r.cash);byId('valuation').textContent=won(r.valuation);
  byId('profit').textContent=(r.profit>=0?'+':'')+won(r.profit);byId('return').textContent=percent(r.rate);
  // V1_R042: DEV-only fixed negative day comparison to exercise independent card palettes.
@@ -180,8 +223,9 @@ function render(data){
   }
   group.append(tiles);root.append(group);
  }
- // V1_R060: removed the two auxiliary rows below the heatmap.
+ updateHeatmapMode(heatmapMode);
+  // V1_R060: removed the two auxiliary rows below the heatmap.
  requestAnimationFrame(layoutTreemap);
 }
-if(typeof document!=='undefined'){try{render(MOCK);document.getElementById('indices').addEventListener('scroll',updateIndexPagination,{passive:true});window.addEventListener('resize',updateIndexPagination,{passive:true});window.addEventListener('resize',()=>requestAnimationFrame(layoutTreemap),{passive:true});if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>requestAnimationFrame(layoutTreemap));observer.observe(document.getElementById('sector-grid'));}}catch(e){console.error('표시 오류:',e);}}
+if(typeof document!=='undefined'){try{render(MOCK);setupHeatmapSwipe();document.getElementById('indices').addEventListener('scroll',updateIndexPagination,{passive:true});window.addEventListener('resize',updateIndexPagination,{passive:true});window.addEventListener('resize',()=>requestAnimationFrame(layoutTreemap),{passive:true});if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>requestAnimationFrame(layoutTreemap));observer.observe(document.getElementById('sector-grid'));}}catch(e){console.error('표시 오류:',e);}}
 if(typeof module!=='undefined')module.exports={MOCK,validate,calculate,percent,spark,INDICES,SECTORS,squarify};
