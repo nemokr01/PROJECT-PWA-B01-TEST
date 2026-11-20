@@ -262,7 +262,40 @@ function hideStockDetail(fromHistory=false){
  document.getElementById('briefing-panel')?.classList.remove('show-stock-detail');
  document.querySelectorAll('#sector-grid .heat-tile').forEach(t=>t.classList.remove('selected-stock'));
 }
-window.addEventListener('popstate',()=>{if(selectedStockName)hideStockDetail(true);});
+// V1_R083: one back on home warns, a second within 2s allows leaving.
+const HOME_GUARD_KEY='pwaHomeGuardV1';
+let homeExitDeadline=0;
+let homeExitTimer=null;
+let homeExitToast=null;
+function showHomeExitHint(){
+ if(!homeExitToast){
+  homeExitToast=el('div','pwa-exit-toast');
+  homeExitToast.setAttribute('role','status');
+  homeExitToast.setAttribute('aria-live','polite');
+  document.body.append(homeExitToast);
+ }
+ homeExitToast.textContent='종료하려면 뒤로가기를 한 번 더 누르세요';
+ homeExitToast.classList.add('visible');
+ clearTimeout(homeExitTimer);
+ homeExitTimer=setTimeout(()=>homeExitToast?.classList.remove('visible'),2000);
+}
+function armHomeBackGuard(){
+ if(history.state?.[HOME_GUARD_KEY])return;
+ history.pushState({...history.state,[HOME_GUARD_KEY]:true},'',location.href);
+}
+window.addEventListener('popstate',()=>{
+ if(selectedStockName){hideStockDetail(true);return;}
+ if(Date.now()<homeExitDeadline){
+  homeExitDeadline=0;
+  // Leave the synthetic guard and original home entry; browser/PWA controls actual exit.
+  history.go(-1);
+  return;
+ }
+ homeExitDeadline=Date.now()+2000;
+ showHomeExitHint();
+ armHomeBackGuard();
+});
+armHomeBackGuard();
 // V1_R073: switch heatmap values without changing evaluation-weighted tile layout.
 let heatmapMode='daily';
 let heatmapStocks=[];
