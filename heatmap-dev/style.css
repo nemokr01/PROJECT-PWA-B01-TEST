@@ -271,3 +271,18 @@
 .asset-card.valuation .valuation-main{flex:1 1 auto;min-width:0}
 .asset-card.valuation .day-card{width:32%;flex:0 0 32%;min-width:78px}
 .asset-card.valuation .valuation-chart{display:block;width:100%}
+
+/* V1_R045: keep outer card geometry; reposition text toward day card and remove internal dead space */
+.asset-card.valuation{gap:4px}
+.asset-card.valuation .day-card{width:37%;flex:0 0 37%;min-width:0}
+.asset-card.valuation .valuation-main{display:flex;flex-direction:column;justify-content:center;align-items:stretch;min-width:0;flex:1 1 0}
+.asset-card.valuation .valuation-main>.asset-label{align-self:flex-start}
+.asset-card.valuation .valuation-main>#valuation{align-self:flex-end;width:100%;text-align:right;white-space:nowrap;overflow:visible;font-size:clamp(15px,3.3vw,25px);letter-spacing:-.055em;margin-top:3px}
+.asset-card.valuation .valuation-main>.profit-line{justify-content:flex-end;text-align:right;gap:2px 5px;width:100%;margin-top:2px}
+.asset-card.valuation .valuation-main>.valuation-chart{align-self:flex-end;width:90%;max-height:30px;margin:2px 0 0}
+@media(max-width:600px) and (orientation:portrait){
+ .asset-card.valuation .day-card{width:35%;flex-basis:35%;min-width:65px}
+ .asset-card.valuation .valuation-main>#valuation{font-size:clamp(14px,3.8vw,20px)}
+ .asset-card.valuation .valuation-main>.profit-line{font-size:10px;line-height:1.2}
+ .asset-card.valuation .valuation-main>.valuation-chart{height:22px;max-height:22px}
+}
