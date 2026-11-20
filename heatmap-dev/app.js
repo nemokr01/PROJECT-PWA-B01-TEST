@@ -153,7 +153,11 @@ function updateHeatmapMode(mode){
  const root=document.getElementById('sector-grid');if(!root)return;
  const title=mode==='daily'?'등락률':'수익률';
  const label=document.getElementById('heatmap-mode');
- if(label)label.textContent=mode==='daily'?'당일 등락률 · 왼쪽으로 밀면 보유 수익률':'보유 수익률 · 오른쪽으로 밀면 당일 등락률';
+ if(label){
+  label.textContent=title;
+  label.setAttribute('aria-label',title+' 표시 중. 누르면 다른 모드로 전환');
+  label.classList.remove('mode-flash');void label.offsetWidth;label.classList.add('mode-flash');
+ }
  const help=document.getElementById('legend-help'),popup=document.getElementById('legend-popup');
  if(help)help.setAttribute('aria-label',title+' 색상 범례 보기');
  if(popup)popup.setAttribute('aria-label',title+' 색상 안내');
@@ -165,7 +169,9 @@ function updateHeatmapMode(mode){
  for(const tile of root.querySelectorAll('.heat-tile')){
   const stock=heatmapStocks.find(s=>s.name===tile.dataset.name);if(!stock)continue;
   const value=stockHeatValue(stock),[bg,fg]=tilePalette(value);
+  tile.classList.remove('heat-mode-pulse');
   tile.style.background=bg;tile.style.color=fg;
+  void tile.offsetWidth;tile.classList.add('heat-mode-pulse');
   tile.classList.toggle('tile-up',value>0);tile.classList.toggle('tile-down',value<0);
   tile.classList.toggle('tile-flat',value===0||value===null);
   const number=tile.querySelector('.tile-change');if(number)number.textContent=percent(value);
@@ -173,6 +179,8 @@ function updateHeatmapMode(mode){
  }
 }
 function setupHeatmapSwipe(){
+ const toggle=document.getElementById('heatmap-mode');
+ if(toggle)toggle.addEventListener('click',()=>updateHeatmapMode(heatmapMode==='daily'?'return':'daily'));
  const root=document.getElementById('sector-grid');if(!root)return;
  let start=null;
  root.addEventListener('touchstart',e=>{start=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
