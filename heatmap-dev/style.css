@@ -589,3 +589,14 @@ html,body,.app{background:#FAF8F5!important;background-image:none!important}
 /* V1_R083: Galaxy home-screen back gesture exit hint */
 .pwa-exit-toast{position:fixed;left:50%;bottom:max(26px,env(safe-area-inset-bottom));transform:translate(-50%,10px);max-width:calc(100vw - 32px);width:max-content;padding:10px 16px;border-radius:24px;background:rgba(30,39,52,.92);color:#fff;font-size:12px;font-weight:600;text-align:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;box-shadow:0 3px 12px rgba(0,0,0,.18)}
 .pwa-exit-toast.visible{opacity:1;transform:translate(-50%,0)}
+
+/* V1_R085: exit confirmation dialog over the unchanged heatmap. */
+.pwa-exit-overlay[hidden]{display:none!important}
+.pwa-exit-overlay{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(12,22,35,.48)}
+.pwa-exit-dialog{box-sizing:border-box;width:min(100%,340px);padding:23px 20px 18px;border-radius:18px;background:#fff;color:#182639;box-shadow:0 14px 45px rgba(0,0,0,.24);text-align:left}
+.pwa-exit-dialog h2{font-size:18px;line-height:1.35;margin:0 0 12px;font-weight:750}
+.pwa-exit-dialog p{font-size:13px;line-height:1.6;margin:0 0 24px;color:#637187}
+.pwa-exit-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pwa-exit-actions button{min-height:43px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer}
+.pwa-exit-cancel{border:1px solid #d7e0ea;background:#fff;color:#34465b}
+.pwa-exit-confirm{border:1px solid #246bb3;background:#246bb3;color:#fff}
