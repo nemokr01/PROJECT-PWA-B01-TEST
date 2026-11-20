@@ -329,3 +329,41 @@
  .asset-card.valuation .day-card .asset-icon{width:12px;height:12px}
  .asset-card.valuation .day-card .day-label{gap:2px;font-size:inherit}
 }
+
+/* V1_R053: white cards with independent soft neon inset borders (flat = no border/glow) */
+.asset-card.valuation,.asset-card.valuation.gain,.asset-card.valuation.loss,.asset-card.valuation.flat{
+ background:#fff!important;border-color:#e7ebf0;
+}
+.asset-card.valuation .valuation-main{
+ box-sizing:border-box;border:1px solid transparent;border-radius:10px;
+ background:transparent!important;
+ padding:7px 6px 7px 5px;
+}
+.asset-card.valuation .day-card,
+.asset-card.valuation .day-card.gain,
+.asset-card.valuation .day-card.loss,
+.asset-card.valuation .day-card.flat{
+ box-sizing:border-box;background:#fff!important;
+ border:1px solid transparent;border-radius:10px;
+}
+.asset-card.valuation.gain .valuation-main{
+ border-color:#e84a65;
+ box-shadow:inset 0 0 5px rgba(232,74,101,.23),0 0 5px rgba(232,74,101,.23);
+}
+.asset-card.valuation.loss .valuation-main{
+ border-color:#378bea;
+ box-shadow:inset 0 0 5px rgba(55,139,234,.23),0 0 5px rgba(55,139,234,.23);
+}
+.asset-card.valuation .day-card.gain{
+ border-color:#e84a65;
+ box-shadow:inset 0 0 5px rgba(232,74,101,.23),0 0 5px rgba(232,74,101,.23);
+}
+.asset-card.valuation .day-card.loss{
+ border-color:#378bea;
+ box-shadow:inset 0 0 5px rgba(55,139,234,.23),0 0 5px rgba(55,139,234,.23);
+}
+.asset-card.valuation.flat .valuation-main,
+.asset-card.valuation .day-card.flat{border-color:transparent;box-shadow:none}
+@media(max-width:600px) and (orientation:portrait){
+ .asset-card.valuation .valuation-main{padding:5px 3px}
+}
