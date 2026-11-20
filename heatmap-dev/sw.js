@@ -1,5 +1,5 @@
 /* PROJECT PWA DEV V1: offline shell, network-first updates; UI and mock data unchanged. */
-const DEV_CACHE='project-pwa-dev-offline-v1-r001';
+const DEV_CACHE='project-pwa-dev-offline-v1-r002';
 const SHELL=['./','./index.html','./style.css?v=87','./app.js?v=87','./icon.svg','./manifest.webmanifest?v=8'];
 const shellURL=new URL('./',self.registration.scope);
 const inScope=url=>url.origin===self.location.origin&&url.pathname.startsWith(shellURL.pathname);
