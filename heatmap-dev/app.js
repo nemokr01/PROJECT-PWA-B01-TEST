@@ -30,6 +30,36 @@ const INDICES=[
  {name:'나스닥',value:'18,450.6',change:'+0.71%',dir:1,points:[11,23,20,33,29,47,44,59,55,72]},
  {name:'다우',value:'42,150.3',change:'-0.18%',dir:-1,points:[49,56,44,53,37,49,41,29,39,33]}
 ];
+// V1_R056: DEV-only index addition; never fetches live market data.
+const selectedIndices=[...INDICES];
+const EXTRA_INDICES=[
+ {name:'러셀2000',value:'2,310.8',change:'+0.26%',dir:1,points:[12,20,17,28,23,35,31,43,41,52]},
+ {name:'닛케이225',value:'38,250.4',change:'-0.31%',dir:-1,points:[55,48,53,39,44,34,36,25,30,20]},
+ {name:'항셍',value:'19,630.1',change:'+0.12%',dir:1,points:[15,22,19,24,21,30,28,37,33,39]}
+];
+function createIndexCard(item){
+ const card=el('article','index-card');
+ card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('small','index-change',item.change));
+ const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);
+ return card;
+}
+function updateIndexPagination(){
+ const row=document.getElementById('indices'),nav=document.getElementById('index-pagination');
+ if(!row||!nav||!row.children.length)return;
+ const cards=[...row.children],step=cards.length>1?cards[1].offsetLeft-cards[0].offsetLeft:row.clientWidth;
+ if(step<=0)return;
+ const visible=Math.max(1,Math.min(cards.length,Math.round((row.clientWidth+5)/step)));
+ const pages=Math.max(1,cards.length-visible+1);
+ const active=Math.max(0,Math.min(pages-1,Math.round(row.scrollLeft/step)));
+ if(nav.children.length!==pages){
+  nav.replaceChildren();
+  for(let i=0;i<pages;i++){
+   const dot=document.createElement('button');dot.type='button';dot.className='index-page';dot.setAttribute('aria-label',`지수 목록 ${i+1}번째 위치로 이동`);
+   dot.addEventListener('click',()=>row.scrollTo({left:i*step,behavior:'smooth'}));nav.append(dot);
+  }
+ }
+ [...nav.children].forEach((dot,i)=>{dot.classList.toggle('active',i===active);dot.setAttribute('aria-current',i===active?'true':'false');});
+}
 const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스','한미반도체','DB하이텍']},{name:'자동차·배터리',stocks:['현대차','기아','현대모비스','LG에너지솔루션']},{name:'IT·바이오·기타',stocks:['NAVER','카카오','삼성바이오로직스','셀트리온','POSCO홀딩스','KB금융','신한지주','한국전력']}];
 const UNOWNED_EXAMPLES=['한전기술','두산에너빌리티'];
 // V1_R039: no stock industry icons; names and percentage only.
@@ -130,7 +160,9 @@ function render(data){
  dayCard.classList.toggle('loss',day<0);
  dayCard.classList.toggle('flat',day===0);
  const idx=byId('indices');idx.replaceChildren();
- for(const item of INDICES){const card=el('article','index-card');card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('small','index-change',item.change));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
+ for(const item of selectedIndices){idx.append(createIndexCard(item));}
+ const addCard=el('button','index-card index-add');addCard.type='button';addCard.setAttribute('aria-label','모의 시장지수 추가');addCard.append(el('span','index-add-plus','+'),el('span','index-add-label','지수 추가'));addCard.addEventListener('click',()=>{const item=EXTRA_INDICES.find(x=>!selectedIndices.some(y=>y.name===x.name));if(!item){addCard.querySelector('.index-add-label').textContent='추가 완료';addCard.disabled=true;return;}selectedIndices.push(item);idx.insertBefore(createIndexCard(item),addCard);updateIndexPagination();idx.scrollTo({left:idx.scrollWidth,behavior:'smooth'});});idx.append(addCard);
+ requestAnimationFrame(updateIndexPagination);
  const root=byId('sector-grid');root.replaceChildren();
  for(const theme of SECTORS){
   const members=theme.stocks.map(name=>r.stocks.find(s=>s.name===name)).filter(s=>s&&s.value>0);
@@ -152,5 +184,5 @@ function render(data){
  byId('notice').textContent='보유 평가금액 비례 · 9단계 등락률 색상';
  requestAnimationFrame(layoutTreemap);
 }
-if(typeof document!=='undefined'){try{render(MOCK);window.addEventListener('resize',()=>requestAnimationFrame(layoutTreemap),{passive:true});if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>requestAnimationFrame(layoutTreemap));observer.observe(document.getElementById('sector-grid'));}}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
+if(typeof document!=='undefined'){try{render(MOCK);document.getElementById('indices').addEventListener('scroll',updateIndexPagination,{passive:true});window.addEventListener('resize',updateIndexPagination,{passive:true});window.addEventListener('resize',()=>requestAnimationFrame(layoutTreemap),{passive:true});if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>requestAnimationFrame(layoutTreemap));observer.observe(document.getElementById('sector-grid'));}}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
 if(typeof module!=='undefined')module.exports={MOCK,validate,calculate,percent,spark,INDICES,SECTORS,squarify};
