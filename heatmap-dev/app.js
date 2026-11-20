@@ -51,27 +51,29 @@ function spark(points,dir=1){if(!Array.isArray(points)||points.length<2||!points
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
 
 function squarify(items,width,height){
- const rects=[];if(!items.length||width<=0||height<=0)return rects;
- const total=items.reduce((n,s)=>n+s.value,0);if(total<=0)return rects;
- const sorted=[...items].sort((a,b)=>b.value-a.value);
- let remaining=sorted.map(s=>({...s,area:s.value/total*width*height}));
- let x=0,y=0,w=width,h=height;
- const worst=(row,side)=>{const sum=row.reduce((n,a)=>n+a.area,0),min=Math.min(...row.map(a=>a.area)),max=Math.max(...row.map(a=>a.area));return Math.max(side*side*max/(sum*sum),(sum*sum)/(side*side*min));};
- function place(row){const sum=row.reduce((n,a)=>n+a.area,0);if(w>=h){const rowW=sum/h;let yy=y;row.forEach((a,i)=>{const hh=i===row.length-1?y+h-yy:a.area/rowW;rects.push({name:a.name,x,y:yy,w:rowW,h:hh});yy+=hh;});x+=rowW;w=Math.max(0,w-rowW);}else{const rowH=sum/w;let xx=x;row.forEach((a,i)=>{const ww=i===row.length-1?x+w-xx:a.area/rowH;rects.push({name:a.name,x:xx,y,w:ww,h:rowH});xx+=ww;});y+=rowH;h=Math.max(0,h-rowH);}}
- let row=[];while(remaining.length){const next=remaining[0],side=Math.min(w,h);if(!row.length||worst([...row,next],side)<=worst(row,side)){row.push(remaining.shift());}else{place(row);row=[];}}
+ if(!items.length||width<=0||height<=0)return [];
+ const valid=items.filter(s=>Number.isFinite(s.value)&&s.value>0).sort((a,b)=>b.value-a.value);
+ const total=valid.reduce((n,s)=>n+s.value,0);if(!total)return [];
+ const remaining=valid.map(s=>({...s,area:s.value/total*width*height}));
+ const rects=[];let x=0,y=0,w=width,h=height,row=[];
+ const worst=(list,side)=>{if(!list.length)return Infinity;const sum=list.reduce((n,a)=>n+a.area,0),small=Math.min(...list.map(a=>a.area)),large=Math.max(...list.map(a=>a.area));return Math.max(side*side*large/(sum*sum),(sum*sum)/(side*side*small));};
+ function place(list){
+  const sum=list.reduce((n,a)=>n+a.area,0);
+  if(w>=h){const rowH=sum/w;let xx=x;list.forEach((a,i)=>{const ww=i===list.length-1?x+w-xx:a.area/rowH;rects.push({name:a.name,x:xx,y,w:ww,h:rowH});xx+=ww;});y+=rowH;h=Math.max(0,h-rowH);}
+  else{const colW=sum/h;let yy=y;list.forEach((a,i)=>{const hh=i===list.length-1?y+h-yy:a.area/colW;rects.push({name:a.name,x,y:yy,w:colW,h:hh});yy+=hh;});x+=colW;w=Math.max(0,w-colW);}
+ }
+ while(remaining.length){const next=remaining[0],side=Math.min(w,h);if(!row.length||worst([...row,next],side)<=worst(row,side))row.push(remaining.shift());else{place(row);row=[];}}
  if(row.length)place(row);return rects;
 }
 function layoutTreemap(){
  const root=document.getElementById('sector-grid');if(!root)return;
- for(const sector of root.querySelectorAll('.sector')){
-  const tiles=sector.querySelector('.squarified-tiles');if(!tiles)continue;
-  const width=tiles.clientWidth,height=tiles.clientHeight;if(width<10||height<10)continue;
-  const nodes=[...tiles.children],data=nodes.map(tile=>({name:tile.dataset.name,value:Number(tile.dataset.valuationArea)}));
-  const positions=squarify(data,width,height);
-  for(const pos of positions){const tile=nodes.find(el=>el.dataset.name===pos.name);if(!tile)continue;
-   tile.style.setProperty('left',pos.x+'px','important');tile.style.setProperty('top',pos.y+'px','important');tile.style.setProperty('width',Math.max(0,pos.w-3)+'px','important');tile.style.setProperty('height',Math.max(0,pos.h-3)+'px','important');
-   tile.classList.toggle('tile-tiny',pos.w<75||pos.h<55);tile.classList.toggle('tile-micro',pos.w<47||pos.h<35);
-  }
+ const width=root.clientWidth,height=root.clientHeight;if(width<10||height<10)return;
+ const nodes=[...root.children],data=nodes.map(tile=>({name:tile.dataset.name,value:Number(tile.dataset.valuationArea)}));
+ for(const pos of squarify(data,width,height)){
+  const tile=nodes.find(el=>el.dataset.name===pos.name);if(!tile)continue;
+  for(const [key,val] of Object.entries({left:pos.x,top:pos.y,width:Math.max(0,pos.w-3),height:Math.max(0,pos.h-3)}))tile.style.setProperty(key,val+'px','important');
+  tile.classList.toggle('tile-tiny',pos.w<83||pos.h<58);
+  tile.classList.toggle('tile-micro',pos.w<52||pos.h<37);
  }
 }
 function render(data){
@@ -83,19 +85,14 @@ function render(data){
  const idx=byId('indices');idx.replaceChildren();
  for(const item of INDICES){const card=el('article','index-card');card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('small','index-change',item.change));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
  const root=byId('sector-grid');root.replaceChildren();
- for(const group of SECTORS){
-  const sector=el('section','sector');sector.append(el('h2','sector-heading',group.name+' ›'));
-  const tiles=el('div','sector-tiles squarified-tiles');
-  for(const name of group.stocks){
-   const s=r.stocks.find(x=>x.name===name);if(!s||s.value<=0)continue;
-   const tile=el('article','heat-tile '+(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'));
-   const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
-   tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
-   tile.title=`${s.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
-   tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));
-   const chart=el('div','tile-spark');chart.innerHTML=spark([13,22,20,37,32,44,42,59,54,65],s.change);tile.append(chart);tiles.append(tile);
-  }
-  sector.append(tiles);root.append(sector);
+ const sectorFor=new Map(SECTORS.flatMap(group=>group.stocks.map(name=>[name,group.name])));
+ for(const s of r.stocks.filter(s=>s.value>0)){
+  const tile=el('article','heat-tile '+(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'));
+  const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
+  tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
+  tile.title=`${s.name} · ${sectorFor.get(s.name)||'기타'} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
+  tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));
+  const chart=el('div','tile-spark');chart.innerHTML=spark([13,22,20,37,32,44,42,59,54,65],s.change);tile.append(chart);root.append(tile);
  }
  const demo=byId('unowned-examples');demo.replaceChildren();demo.append(el('strong','example-label','미보유 예시 · 히트맵 제외'));for(const name of UNOWNED_EXAMPLES)demo.append(el('span','example-name',name));
  byId('notice').textContent='보유 평가금액 비례 · 9단계 등락률 색상';
