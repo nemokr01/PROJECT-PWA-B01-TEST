@@ -149,3 +149,14 @@
 @media(max-width:600px) and (orientation:portrait){
  .sector-tiles.squarified-tiles>.heat-tile{width:auto!important;max-width:none!important;min-width:0!important;height:auto!important;max-height:none!important;min-height:0!important;flex:none!important}
 }
+
+/* V1_R026: single valuation-proportional squarified treemap, no sector rows */
+@media(max-width:600px) and (orientation:portrait){
+ #sector-grid.sector-grid{display:block!important;position:relative!important;grid-template-columns:none!important;grid-template-rows:none!important;grid-template-areas:none!important;overflow:hidden!important;min-width:0!important;min-height:0!important;width:100%!important;height:100%!important}
+ #sector-grid>.heat-tile{position:absolute!important;display:flex!important;flex:none!important;min-width:0!important;max-width:none!important;min-height:0!important;max-height:none!important;box-sizing:border-box!important;margin:0!important;padding:5px!important;overflow:hidden!important}
+ #sector-grid>.heat-tile.tile-tiny .tile-icon,#sector-grid>.heat-tile.tile-tiny .tile-spark,#sector-grid>.heat-tile.tile-tiny .tile-weight{display:none!important}
+ #sector-grid>.heat-tile.tile-tiny .tile-name{font-size:10px!important;line-height:1.12!important;overflow-wrap:anywhere}
+ #sector-grid>.heat-tile.tile-tiny .tile-change{font-size:11px!important}
+ #sector-grid>.heat-tile.tile-micro .tile-change,#sector-grid>.heat-tile.tile-micro .tile-icon{display:none!important}
+ #sector-grid>.heat-tile.tile-micro .tile-name{font-size:8px!important}
+}
