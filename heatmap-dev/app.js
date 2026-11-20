@@ -33,6 +33,22 @@ const INDICES=[
 const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스','한미반도체','DB하이텍']},{name:'자동차·배터리',stocks:['현대차','기아','현대모비스','LG에너지솔루션']},{name:'IT·바이오·기타',stocks:['NAVER','카카오','삼성바이오로직스','셀트리온','POSCO홀딩스','KB금융','신한지주','한국전력']}];
 const UNOWNED_EXAMPLES=['한전기술','두산에너빌리티'];
 // V1_R039: no stock industry icons; names and percentage only.
+// V1_R040: preserve full stock names and wrap only at meaningful boundaries.
+const NAME_PARTS={
+ 'POSCO홀딩스':['POSCO','홀딩스'],
+ 'LG에너지솔루션':['LG','에너지솔루션'],
+ '삼성바이오로직스':['삼성','바이오로직스'],
+ 'SK하이닉스':['SK','하이닉스'],
+ 'DB하이텍':['DB','하이텍'],
+ '한미반도체':['한미','반도체'],
+ '현대모비스':['현대','모비스']
+};
+function stockNameNode(name){
+ const label=el('span','tile-name');
+ const parts=NAME_PARTS[name]||[name];
+ parts.forEach((part,i)=>{if(i)label.append(document.createElement('wbr'));label.append(el('span','name-part',part));});
+ return label;
+}
 function tilePalette(change){
  const anchors=[[-4.5,'#123F98'],[-3,'#246CC5'],[-2,'#4B9ADD'],[-1,'#A4D3F2'],[0,'#8793A2'],[1,'#F6B4B7'],[2,'#F17A83'],[3,'#DF4356'],[4.5,'#A90E2B']];
  if(!Number.isFinite(change))return ['#788594','#FFFFFF'];
@@ -106,7 +122,7 @@ function render(data){
    const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
    tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
    tile.title=`${s.name} · ${theme.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
-   const caption=el('div','tile-caption');caption.append(el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)));tile.append(caption);
+   const caption=el('div','tile-caption');caption.append(stockNameNode(s.name),el('strong','tile-change',percent(s.change)));tile.append(caption);
    tiles.append(tile);
   }
   group.append(tiles);root.append(group);
