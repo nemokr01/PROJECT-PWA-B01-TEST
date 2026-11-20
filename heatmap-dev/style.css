@@ -64,3 +64,16 @@
  .pagination>*{height:5px}
 }
 @media(max-width:600px) and (orientation:portrait) and (max-height:650px){main{grid-template-rows:minmax(80px,.83fr) minmax(58px,.61fr) minmax(0,3.72fr) minmax(49px,.72fr);gap:4px}.valuation-chart{height:16px}.index-spark{height:12px}}
+
+/* V1_R016: slightly taller asset cards, unobtrusive help and single-row 9-color guide */
+@media(max-width:600px) and (orientation:portrait){
+ main{grid-template-rows:minmax(97px,.93fr) minmax(66px,.61fr) minmax(0,3.62fr) minmax(62px,.72fr)}
+ .asset-card{padding:7px 7px}.valuation{padding:7px}
+ .asset-card strong{margin-top:5px}.valuation-chart{height:25px;margin-top:2px}
+ .legend-help{top:2px;right:8px;width:27px;height:27px;border-color:rgba(88,122,153,.24);background:rgba(255,255,255,.45);color:rgba(36,83,119,.48);box-shadow:0 1px 3px rgba(18,35,50,.08)}
+ .legend-help:focus-visible,.legend-help:hover,.legend-help[aria-expanded="true"]{color:rgba(36,83,119,.88);background:rgba(255,255,255,.85)}
+ .legend-popup{top:34px;right:0;width:100%;max-width:100%;padding:9px 7px}
+ .legend-popup .scale-legend{display:grid!important;grid-template-columns:repeat(9,minmax(0,1fr))!important;gap:2px!important;overflow:visible!important}
+ .legend-popup .scale-item{min-width:0;min-height:27px;padding:0;font-size:clamp(7px,1.9vw,9px);letter-spacing:-.05em}
+}
+@media(max-width:600px) and (orientation:portrait) and (max-height:650px){main{grid-template-rows:minmax(87px,.93fr) minmax(58px,.61fr) minmax(0,3.62fr) minmax(49px,.72fr)}}
