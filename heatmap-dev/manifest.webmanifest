@@ -1,0 +1,19 @@
+{
+  "id": "/PROJECT-PWA-B01-TEST/heatmap-dev/",
+  "name": "PROJECT PWA · 개발용 히트맵",
+  "short_name": "PWA DEV",
+  "description": "PROJECT PWA Galaxy 개발용 모의 히트맵",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#edf5ff",
+  "theme_color": "#edf5ff",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
