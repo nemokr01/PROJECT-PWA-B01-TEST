@@ -420,3 +420,18 @@
  .index-add-plus{font-size:20px}
  .index-add-label{font-size:9px}
 }
+
+/* V1_R057: remove colored neon and restore quiet neutral card outlines */
+.asset-card.valuation,.asset-card.valuation.gain,.asset-card.valuation.loss,.asset-card.valuation.flat{
+ border:1px solid #dce8f3!important;
+ box-shadow:0 2px 8px #b5c7da30!important;
+ background:#fff!important;
+}
+.asset-card.valuation .day-card,
+.asset-card.valuation .day-card.gain,
+.asset-card.valuation .day-card.loss,
+.asset-card.valuation .day-card.flat{
+ border:1px solid #e7ebf0!important;
+ box-shadow:none!important;
+ background:#fff!important;
+}
