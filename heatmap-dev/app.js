@@ -117,8 +117,18 @@ function render(data){
  const r=calculate(data),byId=id=>document.getElementById(id);
  byId('invested').textContent=won(r.invested);byId('cash').textContent=won(r.cash);byId('valuation').textContent=won(r.valuation);
  byId('profit').textContent=(r.profit>=0?'+':'')+won(r.profit);byId('return').textContent=percent(r.rate);
- const previous=r.stocks.reduce((sum,s)=>sum+(s.value/(1+s.change/100)),0);
- const day=r.valuation-previous;byId('dayrate').textContent=percent(previous?day/previous*100:0);byId('dayprofit').textContent=(day>=0?'+':'')+won(Math.round(day));
+ // V1_R042: DEV-only fixed negative day comparison to exercise independent card palettes.
+ const day=-42819,dayRate=-0.64;
+ byId('dayrate').textContent=percent(dayRate);
+ byId('dayprofit').textContent=won(day);
+ const valuationCard=document.querySelector('.asset-card.valuation');
+ valuationCard.classList.toggle('gain',r.profit>0);
+ valuationCard.classList.toggle('loss',r.profit<0);
+ valuationCard.classList.toggle('flat',r.profit===0);
+ const dayCard=byId('dayrate').closest('.day-card');
+ dayCard.classList.toggle('gain',day>0);
+ dayCard.classList.toggle('loss',day<0);
+ dayCard.classList.toggle('flat',day===0);
  const idx=byId('indices');idx.replaceChildren();
  for(const item of INDICES){const card=el('article','index-card');card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('small','index-change',item.change));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
  const root=byId('sector-grid');root.replaceChildren();
