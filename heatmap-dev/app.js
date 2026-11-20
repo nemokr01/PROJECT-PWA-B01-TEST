@@ -1,0 +1,56 @@
+'use strict';
+// 모의 데이터 전용. 키움·Oracle·외부 네트워크 요청 없음.
+const MOCK = Object.freeze({cash:1450000,stocks:[
+ {name:'삼성전자',buy:65000,price:71000,qty:12,change:1.8},
+ {name:'SK하이닉스',buy:190000,price:205000,qty:4,change:2.4},
+ {name:'현대차',buy:245000,price:232000,qty:3,change:-1.1},
+ {name:'NAVER',buy:205000,price:205000,qty:2,change:0},
+ {name:'카카오',buy:47000,price:44000,qty:8,change:-0.8}
+]});
+const won=n=>new Intl.NumberFormat('ko-KR',{style:'currency',currency:'KRW',maximumFractionDigits:0}).format(n);
+const percent=n=>Number.isFinite(n)?`${n>=0?'+':''}${n.toFixed(2)}%`:'—';
+function validate(data){if(!data||!Array.isArray(data.stocks)||!Number.isFinite(data.cash)||data.cash<0)throw Error('예수금 또는 종목 목록 오류');const names=new Set();for(const s of data.stocks){if(typeof s.name!=='string'||!s.name.trim()||names.has(s.name)||![s.buy,s.price,s.qty,s.change].every(Number.isFinite)||s.buy<0||s.price<0||s.qty<0||!Number.isInteger(s.qty))throw Error('종목 데이터 오류');names.add(s.name);}return data;}
+function calculate(data){validate(data);const stocks=data.stocks.map(s=>({...s,invested:s.buy*s.qty,value:s.price*s.qty,profit:(s.price-s.buy)*s.qty}));const invested=stocks.reduce((a,s)=>a+s.invested,0),valuation=stocks.reduce((a,s)=>a+s.value,0);if(!Number.isSafeInteger(invested)||!Number.isSafeInteger(valuation))throw Error('계산 범위 초과');return {stocks,invested,valuation,profit:valuation-invested,rate:invested?((valuation-invested)/invested)*100:null,cash:data.cash};}
+
+const INDICES=[
+ {name:'코스피',value:'2,650.12',change:'+0.82%',dir:1,points:[12,21,18,33,30,45,42,55,51,69]},
+ {name:'코스닥',value:'760.82',change:'-0.50%',dir:-1,points:[58,49,55,39,46,37,45,30,38,34]},
+ {name:'S&P500',value:'5,850.2',change:'+0.34%',dir:1,points:[12,19,16,32,28,42,40,56,53,66]},
+ {name:'나스닥',value:'18,450.6',change:'+0.71%',dir:1,points:[11,23,20,33,29,47,44,59,55,72]},
+ {name:'다우',value:'42,150.3',change:'-0.18%',dir:-1,points:[49,56,44,53,37,49,41,29,39,33]}
+];
+const SECTORS=[{name:'반도체',stocks:['삼성전자','SK하이닉스']},{name:'전력·에너지',stocks:['한전기술','두산에너빌리티']},{name:'자동차·기타',stocks:['현대차','NAVER','카카오']}];
+function spark(points,dir=1){if(!Array.isArray(points)||points.length<2||!points.every(Number.isFinite))throw Error('미니차트 데이터 오류');const w=160,h=55,min=Math.min(...points),max=Math.max(...points),span=max-min||1;const coords=points.map((n,i)=>`${(i/(points.length-1)*w).toFixed(1)},${(h-5-(n-min)/span*(h-12)).toFixed(1)}`).join(' ');return `<svg class="spark ${dir>0?'rising':dir<0?'falling':'neutral'}" viewBox="0 0 ${w} ${h}" aria-hidden="true" preserveAspectRatio="none"><polyline points="${coords}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
+function render(data){
+ const r=calculate(data),byId=id=>document.getElementById(id);
+ byId('invested').textContent=won(r.invested);byId('valuation').textContent=won(r.valuation);
+ byId('profit').textContent=won(r.profit);byId('return').textContent=r.rate===null?'—':percent(r.rate);
+ byId('profit').className=r.profit>0?'positive':r.profit<0?'negative':'';
+ byId('return').className=r.profit>0?'positive':r.profit<0?'negative':'';
+ byId('cash').textContent=won(r.cash);
+ const dayChange=r.valuation? r.stocks.reduce((sum,s)=>sum+s.value*s.change/100,0):0;
+ byId('dayrate').textContent=r.valuation?percent(dayChange/r.valuation*100):'—';
+ byId('dayprofit').textContent=(dayChange>=0?'+':'')+won(Math.round(dayChange));byId('dayrate').className=dayChange>0?'positive':dayChange<0?'negative':'';byId('dayprofit').className=dayChange>0?'positive':dayChange<0?'negative':'';
+ const idx=byId('indices');idx.replaceChildren();
+ for(const item of INDICES){const card=el('article','index-card '+(item.dir>0?'red':item.dir<0?'blue':'neutral'));card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('span','index-change',item.change));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
+ const root=byId('sector-grid');root.replaceChildren();
+ const owned=r.stocks.filter(s=>s.value>0);
+ const minPositive=owned.length?Math.min(...owned.map(s=>s.value)):0;
+ const areaScale=minPositive?72/minPositive:0;
+ for(const group of SECTORS){
+   const sector=el('section','sector');sector.append(el('h2','sector-heading',group.name+' ›'));
+   const tiles=el('div','sector-tiles');
+   for(const name of group.stocks){
+    const s=r.stocks.find(x=>x.name===name);
+    const tile=el('article','heat-tile '+(s?(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'):'tile-demo'));
+    if(s){const weight=r.valuation?s.value/r.valuation:0;tile.style.setProperty('--weight',String(Math.max(weight*100,0.1)));tile.dataset.valuationWeight=String(weight);tile.style.width=s.value>0?`${(s.value*areaScale).toFixed(4)}px`:'72px';tile.dataset.valuationArea=String(s.value);tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));}
+    else {tile.style.setProperty('--weight','8');tile.style.width='72px';tile.append(el('span','tile-icon','◇'),el('span','tile-name',name),el('strong','tile-change','예시'),el('small','tile-weight','미보유 · 모의 배치'));}
+    const chart=el('div','tile-spark');chart.innerHTML=spark(s?[13,22,20,37,32,44,42,59,54,65]:[15,22,18,30,26,37,34,49],s?.change||0);tile.append(chart);tiles.append(tile);
+   }
+   sector.append(tiles);root.append(sector);
+ }
+ byId('notice').textContent='보유 종목은 동일 높이·평가금액 비례 너비로 표시합니다. 최소 너비 72px, 좁은 화면은 가로 스크롤. 미보유 예시 타일은 평가비중에서 제외합니다.';
+}
+if(typeof document!=='undefined'){try{render(MOCK);}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
+if(typeof module!=='undefined')module.exports={MOCK,validate,calculate,percent,spark,INDICES,SECTORS};
