@@ -537,3 +537,35 @@ html,body,.app{background:#FAF8F5!important;background-image:none!important}
 
 /* V1_R076: align mode text tightly with the ? control, clear of sector titles */
 #heatmap-mode{top:-5px!important;right:29px!important;padding:0 2px!important;line-height:21px!important;height:21px!important;display:inline-flex!important;align-items:center!important;justify-content:flex-end!important}
+
+/* V1_R081: briefing and stock details occupy the same fixed-height panel. */
+#briefing-default[hidden],#stock-detail[hidden]{display:none!important}
+#briefing-panel.show-stock-detail{display:block!important;padding:6px 9px!important;overflow:hidden!important}
+#stock-detail{height:100%;min-height:0;display:flex;flex-direction:column;gap:2px;overflow:hidden;color:#1c2c40}
+.stock-detail-head{display:flex;align-items:center;gap:5px;min-width:0;line-height:1.1}
+.stock-detail-back{border:0;background:transparent;color:#244e70;padding:0 5px 0 0;font-size:21px;line-height:1;cursor:pointer}
+.stock-detail-name{font-size:clamp(12px,3.5vw,17px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stock-detail-market{font-size:9px;color:#52647b;background:#eef3f8;padding:2px 5px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:95px}
+.stock-detail-mock{margin-left:auto;color:#7b8ca1;font-size:9px;white-space:nowrap}
+.stock-detail-price{display:flex;align-items:baseline;gap:9px;line-height:1.1}
+.stock-detail-price strong{font-size:clamp(15px,4.3vw,21px);letter-spacing:-.04em}
+.stock-detail-rate{font-size:12px;font-weight:700}
+.stock-detail-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 7px}
+.stock-detail-metric{display:flex;flex-direction:column;min-width:0;gap:0}
+.stock-detail-metric span{font-size:9px;color:#65768b;white-space:nowrap}
+.stock-detail-metric strong{font-size:clamp(10px,2.9vw,13px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stock-detail .gain,.stock-detail-rate.gain{color:#c52c42}
+.stock-detail .loss,.stock-detail-rate.loss{color:#2465b5}
+.stock-detail .flat,.stock-detail-rate.flat{color:#536477}
+.stock-detail-trend{flex:1;min-height:12px;position:relative;overflow:hidden}
+.stock-detail-trend svg{width:100%;height:100%;display:block}
+.stock-detail-trend small{position:absolute;right:0;bottom:0;font-size:8px;color:#6b7b90;background:#ffffffcc}
+#sector-grid .heat-tile{cursor:pointer}
+#sector-grid .heat-tile.selected-stock{outline:2px solid #263d56;outline-offset:-2px;z-index:2}
+#sector-grid .heat-tile:focus-visible{outline:3px solid #f4bc44;outline-offset:-3px}
+@media(min-width:601px){#briefing-panel.show-stock-detail{padding:10px 15px!important}.stock-detail-metrics{grid-template-columns:repeat(5,minmax(0,1fr))}.stock-detail-trend{min-height:20px}}
+@media(max-width:600px) and (orientation:portrait) and (max-height:700px){
+ .stock-detail-metrics{grid-template-columns:repeat(5,minmax(0,1fr));gap:2px}
+ .stock-detail-metric strong{font-size:9px}
+ .stock-detail-trend{display:none}
+}
