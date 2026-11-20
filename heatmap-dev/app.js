@@ -180,9 +180,8 @@ function render(data){
   }
   group.append(tiles);root.append(group);
  }
- const demo=byId('unowned-examples');demo.replaceChildren();demo.append(el('strong','example-label','미보유 예시 · 히트맵 제외'));for(const name of UNOWNED_EXAMPLES)demo.append(el('span','example-name',name));
- byId('notice').textContent='보유 평가금액 비례 · 9단계 등락률 색상';
+ // V1_R060: removed the two auxiliary rows below the heatmap.
  requestAnimationFrame(layoutTreemap);
 }
-if(typeof document!=='undefined'){try{render(MOCK);document.getElementById('indices').addEventListener('scroll',updateIndexPagination,{passive:true});window.addEventListener('resize',updateIndexPagination,{passive:true});window.addEventListener('resize',()=>requestAnimationFrame(layoutTreemap),{passive:true});if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>requestAnimationFrame(layoutTreemap));observer.observe(document.getElementById('sector-grid'));}}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
+if(typeof document!=='undefined'){try{render(MOCK);document.getElementById('indices').addEventListener('scroll',updateIndexPagination,{passive:true});window.addEventListener('resize',updateIndexPagination,{passive:true});window.addEventListener('resize',()=>requestAnimationFrame(layoutTreemap),{passive:true});if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>requestAnimationFrame(layoutTreemap));observer.observe(document.getElementById('sector-grid'));}}catch(e){console.error('표시 오류:',e);}}
 if(typeof module!=='undefined')module.exports={MOCK,validate,calculate,percent,spark,INDICES,SECTORS,squarify};
