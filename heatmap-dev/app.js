@@ -123,20 +123,68 @@ function squarify(items,width,height){
  while(remaining.length){const next=remaining[0],side=Math.min(w,h);if(!row.length||worst([...row,next],side)<=worst(row,side))row.push(remaining.shift());else{place(row);row=[];}}
  if(row.length)place(row);return rects;
 }
+// V1_R080: fixed-area, stock-count-aware, valuation-ranked 2D theme layout.
+// All weights are display weights only; actual valuation/returns remain unchanged.
 function layoutTreemap(){
  const root=document.getElementById('sector-grid');if(!root)return;
  const width=root.clientWidth,height=root.clientHeight;if(width<10||height<10)return;
  const groups=[...root.querySelectorAll('.theme-group')];
- const groupRects=squarify(groups.map(g=>({name:g.dataset.theme,value:Number(g.dataset.valuationArea)})),width,height);
- for(const rect of groupRects){
-  const group=groups.find(g=>g.dataset.theme===rect.name);if(!group)continue;
+ const entries=groups.map(group=>{
+  const tiles=[...group.querySelectorAll('.heat-tile')];
+  const valuation=tiles.reduce((sum,t)=>sum+Math.max(0,Number(t.dataset.valuationArea)||0),0);
+  return {group,tiles,valuation,name:group.dataset.theme};
+ }).filter(e=>e.tiles.length&&e.valuation>0).sort((a,b)=>b.valuation-a.valuation);
+ if(!entries.length)return;
+ const stockCount=entries.reduce((n,e)=>n+e.tiles.length,0);
+ // Compress differences as the number of stocks grows, keeping the ordering.
+ const exponent=stockCount<=4?1:stockCount<=8?.75:stockCount<=12?.60:stockCount<=16?.45:.35;
+ const stockWeight=tile=>Math.pow(Math.max(1,Number(tile.dataset.valuationArea)||0),exponent);
+ const weighted=entries.map(e=>({...e,weight:e.tiles.reduce((n,t)=>n+stockWeight(t),0)}));
+ // Ordered binary partition. A is top-left; lower ranked groups flow right/below.
+ // Unlike fixed columns, partitions can be horizontal or vertical.
+ function partition(items,x,y,w,h){
+  if(!items.length)return [];
+  if(items.length===1)return [{entry:items[0],x,y,w,h}];
+  const total=items.reduce((n,e)=>n+e.weight,0);
+  let best=1,diff=Infinity,acc=0;
+  for(let i=1;i<items.length;i++){acc+=items[i-1].weight;const d=Math.abs(acc/total-.5);if(d<diff){diff=d;best=i;}}
+  const first=items.slice(0,best),second=items.slice(best);
+  const ratio=first.reduce((n,e)=>n+e.weight,0)/total;
+  if(w>=h){const cut=w*ratio;return [...partition(first,x,y,cut,h),...partition(second,x+cut,y,w-cut,h)];}
+  const cut=h*ratio;return [...partition(first,x,y,w,cut),...partition(second,x,y+cut,w,h-cut)];
+ }
+ // Try both orientations to avoid narrow sections; never change total heatmap size.
+ const layouts=[partition(weighted,0,0,width,height)];
+ function alternate(items,x,y,w,h,vertical){
+  if(items.length===1)return [{entry:items[0],x,y,w,h}];
+  const total=items.reduce((n,e)=>n+e.weight,0);
+  let acc=0,best=1,diff=Infinity;
+  for(let i=1;i<items.length;i++){acc+=items[i-1].weight;const d=Math.abs(acc/total-.5);if(d<diff){diff=d;best=i;}}
+  const left=items.slice(0,best),right=items.slice(best),ratio=left.reduce((n,e)=>n+e.weight,0)/total;
+  if(vertical){const cut=w*ratio;return [...alternate(left,x,y,cut,h,!vertical),...alternate(right,x+cut,y,w-cut,h,!vertical)];}
+  const cut=h*ratio;return [...alternate(left,x,y,w,cut,!vertical),...alternate(right,x,y+cut,w,h-cut,!vertical)];
+ }
+ layouts.push(alternate(weighted,0,0,width,height,width>=height));
+ layouts.push(alternate(weighted,0,0,width,height,width<height));
+ const evaluate=layout=>layout.reduce((penalty,r)=>{
+  const heading=Math.min(23,Math.max(14,r.h*.13)),availableH=Math.max(1,r.h-heading-3),availableW=Math.max(1,r.w-5);
+  const tiles=squarify(r.entry.tiles.map(t=>({name:t.dataset.name,value:stockWeight(t)})),availableW,availableH);
+  return penalty+tiles.reduce((n,t)=>{
+   const shortfall=Math.max(0,56-t.h)/56+Math.max(0,72-t.w)/72;
+   const ratio=Math.max(t.w/Math.max(1,t.h),t.h/Math.max(1,t.w));
+   return n+shortfall*shortfall*10+Math.max(0,ratio-2.8)*.5;
+  },0);
+ },0);
+ const layout=layouts.reduce((best,next)=>evaluate(next)<evaluate(best)?next:best);
+ for(const rect of layout){
+  const group=rect.entry.group;
   for(const [key,val] of Object.entries({left:rect.x,top:rect.y,width:Math.max(0,rect.w-3),height:Math.max(0,rect.h-3)}))group.style.setProperty(key,val+'px','important');
   const header=group.querySelector('.theme-heading'),tiles=group.querySelector('.theme-tiles');
-  const headerHeight=Math.min(23,Math.max(14,rect.h*.13));
-  header.style.height=headerHeight+'px';
+  const headerHeight=Math.min(23,Math.max(14,rect.h*.13));header.style.height=headerHeight+'px';
   const innerWidth=Math.max(0,rect.w-5),innerHeight=Math.max(0,rect.h-3-headerHeight);
-  for(const pos of squarify([...tiles.children].map(t=>({name:t.dataset.name,value:Number(t.dataset.valuationArea)})),innerWidth,innerHeight)){
-   const tile=[...tiles.children].find(t=>t.dataset.name===pos.name);if(!tile)continue;
+  const positions=squarify(rect.entry.tiles.map(t=>({name:t.dataset.name,value:stockWeight(t)})),innerWidth,innerHeight);
+  for(const pos of positions){
+   const tile=rect.entry.tiles.find(t=>t.dataset.name===pos.name);if(!tile)continue;
    for(const [key,val] of Object.entries({left:pos.x,top:pos.y,width:Math.max(0,pos.w-3),height:Math.max(0,pos.h-3)}))tile.style.setProperty(key,val+'px','important');
    tile.classList.toggle('tile-tiny',pos.w<83||pos.h<58);
    tile.classList.toggle('tile-micro',pos.w<52||pos.h<37);
