@@ -460,3 +460,17 @@
  main{grid-template-rows:minmax(87px,.93fr) minmax(58px,.61fr) minmax(0,3.22fr) minmax(74px,1.12fr)!important}
  .briefing>p:not(.time){-webkit-line-clamp:1}
 }
+
+/* V1_R062: align gain/loss numeric text with approved reversed background palette */
+.asset-card.valuation.gain .profit-line,
+.asset-card.valuation.gain .profit-line span{color:#2465B5!important}
+.asset-card.valuation.loss .profit-line,
+.asset-card.valuation.loss .profit-line span{color:#C52C42!important}
+.asset-card.valuation .day-card.gain strong,
+.asset-card.valuation .day-card.gain small{color:#2465B5!important}
+.asset-card.valuation .day-card.loss strong,
+.asset-card.valuation .day-card.loss small{color:#C52C42!important}
+.asset-card.valuation.flat .profit-line,
+.asset-card.valuation.flat .profit-line span,
+.asset-card.valuation .day-card.flat strong,
+.asset-card.valuation .day-card.flat small{color:#536477!important}
