@@ -87,3 +87,12 @@
 
 /* V1_R019: move unobtrusive legend help 5px upward without changing tile sizes */
 @media(max-width:600px) and (orientation:portrait){.legend-help{top:-5px}.legend-popup{top:25px}}
+
+/* V1_R020: 16 mock holdings, three visible sector rows; horizontal overflow for extra tiles */
+@media(max-width:600px) and (orientation:portrait){
+ .sector-grid{grid-template-rows:1fr 1fr 1.12fr!important;gap:5px}
+ .sector-tiles{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;align-items:stretch;gap:5px}
+ .heat-tile{box-sizing:border-box;flex:0 0 auto!important;width:clamp(74px,calc(var(--weight) * 6px + 70px),190px)!important;min-width:74px!important;max-width:190px!important}
+ .tile-name{font-size:10px!important;overflow-wrap:anywhere}
+ .tile-change{font-size:13px!important}
+}
