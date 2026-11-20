@@ -106,7 +106,7 @@ function render(data){
    tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
    tile.title=`${s.name} · ${theme.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
    const caption=el('div','tile-caption');caption.append(el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)));tile.append(caption);
-   const chart=el('div','tile-spark');chart.innerHTML=spark([13,22,20,37,32,44,42,59,54,65],s.change);tile.append(chart);tiles.append(tile);
+   tiles.append(tile);
   }
   group.append(tiles);root.append(group);
  }
