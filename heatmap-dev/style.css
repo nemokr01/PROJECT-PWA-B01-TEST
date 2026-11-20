@@ -569,3 +569,19 @@ html,body,.app{background:#FAF8F5!important;background-image:none!important}
  .stock-detail-metric strong{font-size:9px}
  .stock-detail-trend{display:none}
 }
+
+/* V1_R082: chart is an absolute background behind detail text, never a lower row. */
+#stock-detail{position:relative!important;display:block!important;isolation:isolate;background:transparent!important}
+#stock-detail .stock-detail-backchart{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:none!important}
+#stock-detail .stock-detail-backchart svg{width:100%;height:100%;display:block}
+#stock-detail .stock-detail-content{position:relative;z-index:1;display:flex;flex-direction:column;gap:3px;height:100%;min-height:0}
+#stock-detail .stock-detail-chart-label{position:absolute;right:0;bottom:0;z-index:1;font-size:8px;color:#78899b;pointer-events:none}
+#stock-detail .stock-detail-periods{display:flex;gap:3px;align-items:center;margin-top:auto;margin-bottom:8px}
+#stock-detail .stock-detail-period{border:1px solid #d9e4ee;background:#fff;color:#54657b;font-size:9px;line-height:1;padding:3px 7px;border-radius:8px;cursor:pointer}
+#stock-detail .stock-detail-period.active{border-color:#568fc6;color:#216aa6;font-weight:750;background:#edf5ff}
+#briefing-panel.show-stock-detail{background:#fff!important}
+@media(max-width:600px) and (orientation:portrait) and (max-height:700px){
+ #stock-detail .stock-detail-periods{margin-bottom:0;gap:2px}
+ #stock-detail .stock-detail-period{font-size:8px;padding:2px 5px}
+ #stock-detail .stock-detail-chart-label{display:none}
+}
