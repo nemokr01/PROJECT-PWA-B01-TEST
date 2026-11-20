@@ -522,3 +522,6 @@ html,body,.app{background:#FAF8F5!important;background-image:none!important}
 .index-card.index-up .spark.rising{color:#C52C42!important}
 .index-card.index-down .index-value,.index-card.index-down .index-change,
 .index-card.index-down .spark.falling{color:#2465B5!important}
+
+/* V1_R072: remove tinted index-card backgrounds; retain values, chart colors and layout */
+.index-card.index-up,.index-card.index-down,.index-card.index-flat{background:#fff!important;background-image:none!important}
