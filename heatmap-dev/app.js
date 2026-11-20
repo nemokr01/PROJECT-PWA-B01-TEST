@@ -43,10 +43,21 @@ const NAME_PARTS={
  '한미반도체':['한미','반도체'],
  '현대모비스':['현대','모비스']
 };
+// V1_R041: abbreviated labels only on small valuation-sized tiles.
+const SHORT_NAMES={
+ 'POSCO홀딩스':'POSCO','LG에너지솔루션':'LG엔솔','삼성바이오로직스':'삼성바이오',
+ 'SK하이닉스':'SK하이닉스','DB하이텍':'DB','한미반도체':'한미',
+ '현대모비스':'모비스','현대차':'현대','기아':'기아','삼성전자':'삼성',
+ 'NAVER':'NAVER','카카오':'카카오','셀트리온':'셀트리온',
+ 'KB금융':'KB','신한지주':'신한','한국전력':'한전'
+};
 function stockNameNode(name){
  const label=el('span','tile-name');
+ const full=el('span','name-full');
  const parts=NAME_PARTS[name]||[name];
- parts.forEach((part,i)=>{if(i)label.append(document.createElement('wbr'));label.append(el('span','name-part',part));});
+ parts.forEach((part,i)=>{if(i)full.append(document.createElement('wbr'));full.append(el('span','name-part',part));});
+ const short=el('span','name-short',SHORT_NAMES[name]||name);
+ label.append(full,short);
  return label;
 }
 function tilePalette(change){
