@@ -506,3 +506,6 @@ html,body,.app{background:#fff!important;background-image:none!important}
 
 /* V1_R067: extremely subtle cool-white overall background; card colors unchanged */
 html,body,.app{background:#FAFCFF!important;background-image:none!important}
+
+/* V1_R068: slightly stronger cool-white overall background; preserve all cards */
+html,body,.app{background:#F7FAFF!important;background-image:none!important}
