@@ -512,3 +512,7 @@ html,body,.app{background:#F7FAFF!important;background-image:none!important}
 
 /* V1_R069: approved warm ivory overall canvas; preserve card colors and layout */
 html,body,.app{background:#FAF8F5!important;background-image:none!important}
+
+/* V1_R070: correct index backgrounds: positive pink, negative blue */
+.index-card.index-up{background:#FFF6F8!important}
+.index-card.index-down{background:#F5F9FF!important}
