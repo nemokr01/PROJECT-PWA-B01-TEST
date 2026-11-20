@@ -317,3 +317,15 @@
 /* V1_R049: nearly white pastel gain/loss backgrounds */
 .asset-card.valuation.gain,.asset-card.valuation .day-card.gain{background:#FFFCFC}
 .asset-card.valuation.loss,.asset-card.valuation .day-card.loss{background:#FBFDFF}
+
+/* V1_R050: consistent semantic outline icons in asset cards */
+.asset-card .asset-label{display:flex;align-items:center;gap:5px}
+.asset-card .asset-icon{display:inline-block;vertical-align:middle;flex:0 0 auto;width:18px;height:18px;color:#56738b}
+.asset-card.valuation .valuation-main>.asset-label{display:flex;align-items:center;gap:5px}
+.asset-card.valuation .day-card .day-label{display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap}
+.asset-card.valuation .day-card .asset-icon{width:14px;height:14px;color:inherit}
+@media(max-width:600px) and (orientation:portrait){
+ .asset-card .asset-icon{width:15px;height:15px}
+ .asset-card.valuation .day-card .asset-icon{width:12px;height:12px}
+ .asset-card.valuation .day-card .day-label{gap:2px;font-size:inherit}
+}
