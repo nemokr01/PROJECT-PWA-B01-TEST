@@ -67,7 +67,7 @@ function render(data){
    sector.append(tiles);root.append(sector);
  }
  const demo=byId('unowned-examples');demo.replaceChildren();demo.append(el('strong','example-label','미보유 예시 · 히트맵 제외'));for(const name of UNOWNED_EXAMPLES)demo.append(el('span','example-name',name));
- byId('notice').textContent='보유 평가금액 비례 · 7단계 등락률 색상';
+ byId('notice').textContent='보유 평가금액 비례 · 9단계 등락률 색상';
 }
 if(typeof document!=='undefined'){try{render(MOCK);}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
 if(typeof module!=='undefined')module.exports={MOCK,validate,calculate,percent,spark,INDICES,SECTORS};
