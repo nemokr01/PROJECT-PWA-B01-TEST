@@ -191,6 +191,46 @@ function layoutTreemap(){
   }
  }
 }
+// V1_R081: stock details replace the briefing content, without changing layout size.
+let selectedStockName=null;
+function showStockDetail(name){
+ const stock=heatmapStocks.find(s=>s.name===name),panel=document.getElementById('stock-detail'),summary=document.getElementById('briefing-default');
+ if(!stock||!panel||!summary)return;
+ selectedStockName=name;
+ const rate=stock.invested?stock.profit/stock.invested*100:null;
+ const theme=SECTORS.find(t=>t.stocks.includes(name))?.name||'기타';
+ const daily=stock.change;
+ const sign=stock.profit>0?'gain':stock.profit<0?'loss':'flat';
+ const daySign=daily>0?'gain':daily<0?'loss':'flat';
+ const total=heatmapStocks.reduce((n,s)=>n+s.value,0);
+ panel.replaceChildren();
+ const head=el('div','stock-detail-head');
+ const back=el('button','stock-detail-back','←');back.type='button';back.setAttribute('aria-label','시장 브리핑으로 돌아가기');back.addEventListener('click',hideStockDetail);
+ head.append(back,el('strong','stock-detail-name',stock.name),el('span','stock-detail-market',theme),el('span','stock-detail-mock','모의'));
+ const price=el('div','stock-detail-price');
+ price.append(el('strong','',won(stock.price)),el('span','stock-detail-rate '+daySign,percent(daily)));
+ const metrics=el('div','stock-detail-metrics');
+ for(const [label,value,cls] of [['보유수량',stock.qty.toLocaleString('ko-KR')+'주',''],['평가금액',won(stock.value),''],['평가손익',(stock.profit>=0?'+':'')+won(stock.profit),sign],['수익률',percent(rate),sign],['보유비중',total?(stock.value/total*100).toFixed(1)+'%':'—','']]){
+  const cell=el('div','stock-detail-metric');cell.append(el('span','',label),el('strong',cls,value));metrics.append(cell);
+ }
+ // Illustrative mock-only trend: not historical or real-time price data.
+ const trend=el('div','stock-detail-trend');
+ const points=[34,31,33,28,29,25,27,23,25,19,21,18,15,17,12].map((v,i)=>v+(daily<0?i*1.6:-i*.35));
+ const line=points.map((v,i)=>((i/(points.length-1))*300).toFixed(1)+','+v.toFixed(1)).join(' ');
+ const chart=document.createElementNS('http://www.w3.org/2000/svg','svg');chart.setAttribute('viewBox','0 0 300 48');chart.setAttribute('preserveAspectRatio','none');chart.setAttribute('aria-hidden','true');
+ const poly=document.createElementNS('http://www.w3.org/2000/svg','polyline');poly.setAttribute('points',line);poly.setAttribute('fill','none');poly.setAttribute('stroke',daily<0?'#246CC5':daily>0?'#DF4356':'#8793A2');poly.setAttribute('stroke-width','2.5');poly.setAttribute('stroke-linejoin','round');chart.append(poly);
+ trend.append(chart,el('small','','모의 추이 · 실제 시세 차트 아님'));
+ panel.append(head,price,metrics,trend);
+ summary.hidden=true;panel.hidden=false;document.getElementById('briefing-panel')?.classList.add('show-stock-detail');
+ document.querySelectorAll('#sector-grid .heat-tile').forEach(t=>t.classList.toggle('selected-stock',t.dataset.name===name));
+}
+function hideStockDetail(){
+ selectedStockName=null;
+ const summary=document.getElementById('briefing-default'),panel=document.getElementById('stock-detail');
+ if(summary)summary.hidden=false;if(panel)panel.hidden=true;
+ document.getElementById('briefing-panel')?.classList.remove('show-stock-detail');
+ document.querySelectorAll('#sector-grid .heat-tile').forEach(t=>t.classList.remove('selected-stock'));
+}
 // V1_R073: switch heatmap values without changing evaluation-weighted tile layout.
 let heatmapMode='daily';
 let heatmapStocks=[];
@@ -288,12 +328,14 @@ function render(data){
    const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
    tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
    tile.title=`${s.name} · ${theme.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
+   tile.setAttribute('role','button');tile.setAttribute('tabindex','0');tile.setAttribute('aria-label',s.name+' 상세 정보 보기');tile.addEventListener('click',()=>showStockDetail(s.name));tile.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showStockDetail(s.name);}});
    const caption=el('div','tile-caption');caption.append(stockNameNode(s.name),el('strong','tile-change',percent(s.change)));tile.append(caption);
    tiles.append(tile);
   }
   group.append(tiles);root.append(group);
  }
  updateHeatmapMode(heatmapMode);
+ if(selectedStockName)showStockDetail(selectedStockName);
   // V1_R060: removed the two auxiliary rows below the heatmap.
  requestAnimationFrame(layoutTreemap);
 }
