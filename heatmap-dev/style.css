@@ -526,11 +526,11 @@ html,body,.app{background:#FAF8F5!important;background-image:none!important}
 /* V1_R072: remove tinted index-card backgrounds; retain values, chart colors and layout */
 .index-card.index-up,.index-card.index-down,.index-card.index-flat{background:#fff!important;background-image:none!important}
 
-/* V1_R074: repeatable, motion-safe heatmap mode transition */
-#heatmap-mode{position:absolute!important;top:0!important;right:37px!important;left:auto!important;width:auto!important;min-width:64px!important;pointer-events:auto!important;cursor:pointer!important;z-index:5!important;border:1px solid #cbd5e1;border-radius:12px;background:#fff;color:#245377!important;font-size:11px!important;font-weight:700;padding:5px 9px;line-height:15px;text-align:center;white-space:nowrap;user-select:none;-webkit-tap-highlight-color:transparent}
-#heatmap-mode.mode-flash{animation:heatModeFlash .32s ease-out}
-#sector-grid .heat-tile{transition:background-color .32s ease,color .32s ease}
-#sector-grid .heat-tile.heat-mode-pulse .tile-change{animation:heatValueFlash .32s ease-out}
-@keyframes heatModeFlash{0%{background:#d9efff;transform:scale(1.07)}100%{background:#fff;transform:scale(1)}}
+/* V1_R075: borderless mode label directly left of help; 0.5s transitions */
+#heatmap-mode{position:absolute!important;top:0!important;right:34px!important;left:auto!important;width:auto!important;min-width:0!important;pointer-events:auto!important;cursor:pointer!important;z-index:5!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;color:#245377!important;font-size:12px!important;font-weight:700;padding:4px 3px!important;line-height:19px;text-align:right;white-space:nowrap;user-select:none;-webkit-tap-highlight-color:transparent}
+#heatmap-mode.mode-flash{animation:heatModeFlash .5s ease-out}
+#sector-grid .heat-tile{transition:background-color .5s ease,color .5s ease}
+#sector-grid .heat-tile.heat-mode-pulse .tile-change{animation:heatValueFlash .5s ease-out}
+@keyframes heatModeFlash{0%{opacity:.45;transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
 @keyframes heatValueFlash{0%{opacity:.45;transform:translateY(3px)}100%{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){#heatmap-mode.mode-flash,#sector-grid .heat-tile.heat-mode-pulse .tile-change{animation:none!important}#sector-grid .heat-tile{transition:none!important}}
