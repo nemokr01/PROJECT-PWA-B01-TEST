@@ -127,3 +127,6 @@
  .briefing{min-height:0!important;overflow:hidden!important}
 }
 @media(max-width:600px) and (orientation:portrait) and (max-height:650px){main{grid-template-rows:minmax(87px,.93fr) minmax(58px,.61fr) minmax(0,3.62fr) minmax(49px,.72fr)!important}.sector{grid-template-rows:14px minmax(0,1fr)!important}}
+
+/* R022 correction: override legacy !important flex shorthand, retain valuation ratios */
+@media(max-width:600px) and (orientation:portrait){.treemap-row>.heat-tile{flex:var(--weight) 1 0px!important}}
