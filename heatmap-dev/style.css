@@ -84,3 +84,6 @@
 /* V1_R018: borderless question mark, preserving its touch target and popup */
 .legend-help{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:rgba(36,83,119,.48)}
 .legend-help:hover,.legend-help:focus-visible,.legend-help[aria-expanded="true"]{background:transparent!important;box-shadow:none!important;color:rgba(36,83,119,.85)}
+
+/* V1_R019: move unobtrusive legend help 5px upward without changing tile sizes */
+@media(max-width:600px) and (orientation:portrait){.legend-help{top:-5px}.legend-popup{top:25px}}
