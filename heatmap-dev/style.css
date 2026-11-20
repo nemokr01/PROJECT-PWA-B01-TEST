@@ -190,3 +190,8 @@
  #sector-grid .theme-tiles>.heat-tile .tile-weight,#sector-grid .theme-tiles>.heat-tile .tile-icon{display:none!important}
  #sector-grid .theme-tiles>.heat-tile .tile-spark{z-index:0!important;opacity:.22!important;pointer-events:none!important}
 }
+
+/* V1_R031: center labels and amounts only in the invested/cash cards; retain card geometry */
+.asset-left>.asset-card{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;text-align:center!important}
+.asset-left>.asset-card>.asset-label{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;text-align:center!important}
+.asset-left>.asset-card>strong{display:block!important;width:100%!important;margin-top:5px!important;text-align:center!important;white-space:nowrap!important;font-variant-numeric:tabular-nums!important}
