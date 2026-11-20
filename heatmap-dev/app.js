@@ -2,10 +2,10 @@
 // 모의 데이터 전용. 키움·Oracle·외부 네트워크 요청 없음.
 const MOCK = Object.freeze({cash:1450000,stocks:[
  {name:'삼성전자',buy:65000,price:71000,qty:12,change:1.8},
- {name:'SK하이닉스',buy:190000,price:205000,qty:4,change:2.4},
- {name:'현대차',buy:245000,price:232000,qty:3,change:-1.1},
- {name:'NAVER',buy:205000,price:205000,qty:2,change:0},
- {name:'카카오',buy:47000,price:44000,qty:8,change:-0.8}
+ {name:'SK하이닉스',buy:190000,price:205000,qty:4,change:4.7},
+ {name:'현대차',buy:245000,price:232000,qty:3,change:-3.2},
+ {name:'NAVER',buy:205000,price:205000,qty:2,change:0.4},
+ {name:'카카오',buy:47000,price:44000,qty:8,change:-4.6}
 ]});
 const won=n=>new Intl.NumberFormat('ko-KR',{style:'currency',currency:'KRW',maximumFractionDigits:0}).format(n);
 const percent=n=>Number.isFinite(n)?`${n>=0?'+':''}${n.toFixed(2)}%`:'—';
