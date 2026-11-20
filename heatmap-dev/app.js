@@ -62,7 +62,27 @@ function squarify(items,width,height){
  if(row.length)place(row);return rects;
 }
 function layoutTreemap(){
- const root=document.getElementById('se const root=byId('sector-grid');root.replaceChildren();
+ const root=document.getElementById('sector-grid');if(!root)return;
+ for(const sector of root.querySelectorAll('.sector')){
+  const tiles=sector.querySelector('.squarified-tiles');if(!tiles)continue;
+  const width=tiles.clientWidth,height=tiles.clientHeight;if(width<10||height<10)continue;
+  const nodes=[...tiles.children],data=nodes.map(tile=>({name:tile.dataset.name,value:Number(tile.dataset.valuationArea)}));
+  const positions=squarify(data,width,height);
+  for(const pos of positions){const tile=nodes.find(el=>el.dataset.name===pos.name);if(!tile)continue;
+   tile.style.left=pos.x+'px';tile.style.top=pos.y+'px';tile.style.width=Math.max(0,pos.w-3)+'px';tile.style.height=Math.max(0,pos.h-3)+'px';
+   tile.classList.toggle('tile-tiny',pos.w<75||pos.h<55);tile.classList.toggle('tile-micro',pos.w<47||pos.h<35);
+  }
+ }
+}
+function render(data){
+ const r=calculate(data),byId=id=>document.getElementById(id);
+ byId('invested').textContent=won(r.invested);byId('cash').textContent=won(r.cash);byId('valuation').textContent=won(r.valuation);
+ byId('profit').textContent=(r.profit>=0?'+':'')+won(r.profit);byId('return').textContent=percent(r.rate);
+ const previous=r.stocks.reduce((sum,s)=>sum+(s.value/(1+s.change/100)),0);
+ const day=r.valuation-previous;byId('dayrate').textContent=percent(previous?day/previous*100:0);byId('dayprofit').textContent=(day>=0?'+':'')+won(Math.round(day));
+ const idx=byId('indices');idx.replaceChildren();
+ for(const item of INDICES){const card=el('article','index-card');card.append(el('span','index-name',item.name),el('strong','index-value',item.value),el('small','index-change',item.change));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
+ const root=byId('sector-grid');root.replaceChildren();
  for(const group of SECTORS){
   const sector=el('section','sector');sector.append(el('h2','sector-heading',group.name+' ›'));
   const tiles=el('div','sector-tiles squarified-tiles');
@@ -70,38 +90,16 @@ function layoutTreemap(){
    const s=r.stocks.find(x=>x.name===name);if(!s||s.value<=0)continue;
    const tile=el('article','heat-tile '+(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'));
    const [bg,fg]=tilePalette(s.change),weight=r.valuation?s.value/r.valuation:0;
-   tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;
-   tile.dataset.valuationArea=String(s.value);
+   tile.style.background=bg;tile.style.color=fg;tile.dataset.name=s.name;tile.dataset.valuationArea=String(s.value);
    tile.title=`${s.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;
    tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));
    const chart=el('div','tile-spark');chart.innerHTML=spark([13,22,20,37,32,44,42,59,54,65],s.change);tile.append(chart);tiles.append(tile);
   }
   sector.append(tiles);root.append(sector);
  }
- requestAnimationFrame(layoutTreemap);
-ge));const chart=el('div','index-spark');chart.innerHTML=spark(item.points,item.dir);card.append(chart);idx.append(card);}
- const root=byId('sector-grid');root.replaceChildren();
- const owned=r.stocks.filter(s=>s.value>0);
- for(const group of SECTORS){
-   const sector=el('section','sector');sector.append(el('h2','sector-heading',group.name+' ›'));
-   const tiles=el('div','sector-tiles treemap-tiles');
-   const sectorStocks=group.stocks.map(name=>r.stocks.find(s=>s.name===name)).filter(s=>s&&s.value>0);
-   const rowCount=sectorStocks.length>4?2:1;
-   const rows=Array.from({length:rowCount},()=>[]);
-   sectorStocks.forEach((s,i)=>rows[rowCount===1?0:i%2].push(s));
-   const rowTotals=rows.map(row=>row.reduce((sum,s)=>sum+s.value,0));
-   const rowEls=rows.map((row,i)=>{const e=el('div','treemap-row');e.style.flexGrow=String(rowTotals[i]);tiles.append(e);return e;});
-   for(const name of group.stocks){
-    const s=r.stocks.find(x=>x.name===name);
-    const tile=el('article','heat-tile '+(s?(s.change>0?'tile-up':s.change<0?'tile-down':'tile-flat'):'tile-demo'));
-    if(s){const [bg,fg]=tilePalette(s.change);tile.style.background=bg;tile.style.color=fg;const weight=r.valuation?s.value/r.valuation:0;tile.style.setProperty('--weight',String(Math.max(weight*100,0.1)));tile.dataset.valuationWeight=String(weight);tile.style.width='auto';tile.style.flexGrow=String(s.value);tile.style.flexBasis='0px';tile.title=`${s.name} · ${percent(s.change)} · 평가비중 ${(weight*100).toFixed(1)}%`;tile.dataset.valuationArea=String(s.value);tile.append(el('span','tile-icon','◈'),el('span','tile-name',s.name),el('strong','tile-change',percent(s.change)),el('small','tile-weight',`평가비중 ${(weight*100).toFixed(1)}%`));}
-    else {continue;}
-    const chart=el('div','tile-spark');chart.innerHTML=spark(s?[13,22,20,37,32,44,42,59,54,65]:[15,22,18,30,26,37,34,49],s?.change||0);tile.append(chart);const rowIndex=rowCount===1?0:sectorStocks.findIndex(item=>item.name===s.name)%2;rowEls[rowIndex].append(tile);
-   }
-   sector.append(tiles);root.append(sector);
- }
  const demo=byId('unowned-examples');demo.replaceChildren();demo.append(el('strong','example-label','미보유 예시 · 히트맵 제외'));for(const name of UNOWNED_EXAMPLES)demo.append(el('span','example-name',name));
  byId('notice').textContent='보유 평가금액 비례 · 9단계 등락률 색상';
+ requestAnimationFrame(layoutTreemap);
 }
-if(typeof document!=='undefined'){try{render(MOCK);window.addEventListener('resize',layoutTreemap,{passive:true});if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>requestAnimationFrame(layoutTreemap));observer.observe(document.getElementById('sector-grid'));}}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
-if(typeof module!=='undefined')module.exports={MOCK,validate,calculate,percent,spark,INDICES,SECTORS};
+if(typeof document!=='undefined'){try{render(MOCK);window.addEventListener('resize',()=>requestAnimationFrame(layoutTreemap),{passive:true});if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>requestAnimationFrame(layoutTreemap));observer.observe(document.getElementById('sector-grid'));}}catch(e){document.getElementById('notice').textContent='표시 오류: '+e.message;}}
+if(typeof module!=='undefined')module.exports={MOCK,validate,calculate,percent,spark,INDICES,SECTORS,squarify};
