@@ -440,3 +440,8 @@
 .asset-card.valuation.gain,.asset-card.valuation .day-card.gain{background:#FFFCFC!important}
 .asset-card.valuation.loss,.asset-card.valuation .day-card.loss{background:#FBFDFF!important}
 .asset-card.valuation.flat,.asset-card.valuation .day-card.flat{background:#fff!important}
+
+/* V1_R059: approved slightly lighter reverse background sample, no neon */
+.asset-card.valuation.gain,.asset-card.valuation .day-card.gain{background:#F5F9FF!important}
+.asset-card.valuation.loss,.asset-card.valuation .day-card.loss{background:#FFF6F8!important}
+.asset-card.valuation.flat,.asset-card.valuation .day-card.flat{background:#fff!important}
