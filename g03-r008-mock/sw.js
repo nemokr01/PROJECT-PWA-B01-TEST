@@ -1,6 +1,6 @@
-const CACHE='project-pwa-heatmap-v1-r008';
+const CACHE='project-pwa-heatmap-v1-r009';
 const CACHE_PREFIX='project-pwa-heatmap-';
-const FILES=['./','./index.html','./style.css','./app.js','./manifest.webmanifest','./icon.svg'];
+const FILES=['./','./index.html','./style.css','./app.js','./manifest.webmanifest','./icon.svg','./integration.js'];
 self.addEventListener('install',event=>event.waitUntil(
  caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())
 ));
