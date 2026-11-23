@@ -1,0 +1,12 @@
+{
+  "environment": "TEST",
+  "source": "STATIC_TEST_FIXTURE",
+  "cash": 1450000,
+  "stocks": [
+    {"name":"삼성전자","sector":"반도체","buyPrice":65000,"price":71000,"quantity":12,"changePct":1.8},
+    {"name":"SK하이닉스","sector":"반도체","buyPrice":190000,"price":205000,"quantity":4,"changePct":2.4},
+    {"name":"현대차","sector":"자동차·기타","buyPrice":245000,"price":232000,"quantity":3,"changePct":-1.1},
+    {"name":"NAVER","sector":"자동차·기타","buyPrice":205000,"price":205000,"quantity":2,"changePct":0},
+    {"name":"카카오","sector":"자동차·기타","buyPrice":47000,"price":44000,"quantity":8,"changePct":-0.8}
+  ]
+}

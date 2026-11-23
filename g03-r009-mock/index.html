@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f7fb">
+  <meta name="description" content="PROJECT PWA G03 R009 공개 HTTPS 렌더 시험용 모의 히트맵">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <title>PROJECT PWA · G03 R009 TEST</title>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div><strong>PROJECT PWA</strong><span class="version">G03 · R009 TEST</span></div>
+      <span class="env-badge">모의 데이터</span>
+    </header>
+
+    <section class="summary" aria-label="자산 요약">
+      <article class="summary-card"><span>총투자금</span><strong id="invested">불러오는 중</strong></article>
+      <article class="summary-card"><span>예수금</span><strong id="cash">불러오는 중</strong></article>
+      <article class="summary-card main-card"><span>평가금액</span><strong id="valuation">불러오는 중</strong><div class="result"><span id="profit">—</span><span id="return">—</span></div></article>
+    </section>
+
+    <section class="heatmap" aria-labelledby="heatmap-title">
+      <div class="section-heading"><div><p class="eyebrow">PORTFOLIO</p><h1 id="heatmap-title">보유 종목 히트맵</h1></div><span id="load-status" role="status">모의 데이터를 확인하고 있습니다</span></div>
+      <div id="sector-list" class="sector-list" aria-live="polite"></div>
+    </section>
+
+    <section class="notice" aria-label="시험 범위">
+      <strong>공개 HTTPS 렌더 시험</strong>
+      <p>이 페이지는 고정된 모의 데이터만 표시합니다. Oracle 서버, 키움 API, 실계좌에는 연결하지 않습니다.</p>
+    </section>
+    <footer>G03 R009 · DEV/TEST 전용 · 운영 비활성</footer>
+  </main>
+  <script src="./app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"name":"PROJECT PWA G03 R009 TEST","short_name":"PWA R009","description":"공개 HTTPS 모의 히트맵 렌더 시험","start_url":"./index.html","scope":"./","display":"standalone","background_color":"#f4f7fb","theme_color":"#f4f7fb","lang":"ko","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
